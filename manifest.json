@@ -1,0 +1,50 @@
+{
+	"manifest_version": 1,
+	"type": "WebApp",
+
+	"meta": {
+		"name": "WUV WUV WUV",
+		"description": "Guild Wars 2 World vs World (vs World) helper.",
+
+		"version": "0.1.0",
+		"author": "meh.",
+
+		"icon": "icon.png",
+		"gray_icon": "icon.gray.png",
+
+		"minimum-overwolf-version": "0.77.10"
+	},
+
+	"data": {
+		"start_window": "MainWindow",
+		"windows": {
+			"MainWindow": {
+				"file": "index.html",
+
+				"size": {
+					"width":  200,
+					"height": 340
+				}
+			},
+
+			"TrackerWindow": {
+				"file": "index.html",
+				"transparent": true,
+				"clickthrough": true,
+				"show_in_taskbar": false,
+
+				"size": {
+					"width": 1,
+					"height": 1
+				}
+			}
+		},
+		"hotkeys": {
+			"toggle": {
+				"title": "Show/Hide",
+				"action-type": "custom",
+				"default": "Apps"
+			}
+		}
+	}
+}
