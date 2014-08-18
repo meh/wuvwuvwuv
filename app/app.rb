@@ -40,19 +40,39 @@ class Application < Lissio::Application
 
 		route '/tracker' do
 			load @map = Map.const_get(map.capitalize).new
+			@map.start(storage[:timers])
 
 			Match.find(world).then {|m|
 				updater = -> {
 					m.details.then {|d|
+						timers = storage[:timers]
+						epoch  = Time.now.to_i
+
+						[d.red, d.blue, d.green, d.eternal].each {|w|
+							w.each {|o|
+								id = o.id.to_s
+
+								if timers.has_key? id
+									owner, _ = timers[id]
+
+									if owner != o.owner
+										timers[id] = [o.owner, epoch]
+									end
+								else
+									timers[id] = [o.owner, 0]
+								end
+							}
+						}
+
+						storage[:timers] = timers
+
 						@map.update(d)
 
-						updater.after(5)
+						updater.after(2)
 					}
 				}
 
 				updater.()
-			}.rescue {|e|
-				$console.log e
 			}
 
 			every 1 do
@@ -92,23 +112,30 @@ class Application < Lissio::Application
 		element.at_css('#container').inner_dom = component.render
 	end
 
+	def storage
+		$window.storage(:wvw)
+	end
+
 	def world
-		$window.storage(:wvw)[:world] rescue nil
+		storage[:world] rescue nil
 	end
 	expose :world
 
 	def world=(value)
-		$window.storage(:wvw)[:world] = value
+		if storage[:world] != value
+			storage[:timers] = {}
+			storage[:world]  = value
+		end
 	end
 	expose :world=
 
 	def map
-		$window.storage(:wvw)[:map] rescue nil
+		storage[:map] rescue nil
 	end
 	expose :map
 
 	def map=(value)
-		$window.storage(:wvw)[:map] = value
+		storage[:map] = value
 	end
 	expose :map=
 

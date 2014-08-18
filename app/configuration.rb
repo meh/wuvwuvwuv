@@ -62,7 +62,7 @@ class Configuration < Lissio::Component
 			world = $document['world'].value
 			map   = $document['map'].value
 
-			next if world.empty? or map.empty?
+			next unless world && map
 
 			Application.world = world.to_i
 			Application.map   = map

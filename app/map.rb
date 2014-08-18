@@ -169,6 +169,22 @@ class Map < Lissio::Component
 		super
 	end
 
+	def name
+		self.class.name.match(/([^:]+)$/)[1].downcase
+	end
+
+	def type_for(id)
+		if el = element.at_css(".icon td[data-id='#{id}'] img")
+			(el.class_names - [:red, :blue, :green]).first
+		end
+	end
+
+	def owner_for(id)
+		if el = element.at_css(".icon td[data-id='#{id}'] img")
+			(el.class_names - [:ruin, :camp, :tower, :keep, :castle]).first || :neutral
+		end
+	end
+
 	def tick
 		element.css('.timer td[data-id]').each {|e|
 			unless (timer = e.inner_text).empty?
@@ -193,11 +209,31 @@ class Map < Lissio::Component
 		}
 	end
 
+	def start(timers)
+		epoch = Time.new.to_i
+
+		timers.each {|id, (_, at)|
+			difference = epoch - at
+			timer      = element.at_css(".timer td[data-id='#{id}']")
+
+			next unless timer
+			next if type_for(id) == :ruin
+
+			if difference > 0 && difference <= 5 * 60
+				remaining = (5 * 60) - difference
+				minutes   = (remaining / 60).floor
+				seconds   = remaining % 60
+
+				timer.inner_text = '%d:%02d' % [minutes, seconds]
+			end
+		}
+	end
+
 	def update(details)
-		details.__send__(self.class.name.match(/([^:]+)$/)[1].downcase).each {|o|
+		details.__send__(name).each {|o|
 			timer = element.at_css(".timer td[data-id='#{o.id}']")
 			icon  = element.at_css(".icon td[data-id='#{o.id}'] img")
-			owner = (icon.class_names - [:ruin, :camp, :tower, :keep, :castle]).first || :neutral
+			owner = owner_for(o.id)
 
 			if owner != o.owner
 				icon.remove_class owner
@@ -206,7 +242,7 @@ class Map < Lissio::Component
 					icon.add_class o.owner
 				end
 
-				unless owner == :neutral
+				if type_for(o.id) != :ruin && owner != :neutral
 					timer.inner_text = '5:00'
 				end
 			end

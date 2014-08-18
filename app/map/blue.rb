@@ -33,14 +33,14 @@ class Map::Blue < Map
 
 		objective do
 			id 58
-			name 'Quarry', 'Godslore'
+			name 'Quarry', 'Godslore', 'Gods'
 			type :camp
 			location :nw
 		end
 
 		objective do
 			id 30
-			name 'Tower', 'Woodhaven'
+			name 'Tower', 'Woodhaven', 'Wood'
 			type :tower
 			location :nw
 		end
@@ -75,7 +75,7 @@ class Map::Blue < Map
 
 		objective do
 			id 60
-			name 'Lumber Mill', 'Stargrove'
+			name 'Lumber Mill', 'Stargrove', 'Grove'
 			type :camp
 			location :ne
 		end
