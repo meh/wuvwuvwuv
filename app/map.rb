@@ -129,7 +129,7 @@ class Map < Lissio::Component
 						end
 
 						_.td.data(id: o.id) do
-							_.img(class: o.type).src("img/#{o.icon}.png")
+							_.img(class: o.type).data(name: o.name)
 						end
 					end
 				end
@@ -160,15 +160,57 @@ class Map < Lissio::Component
 							next
 						end
 
-						_.td.data(id: o.id).low do
-							'1:30'
-						end
+						_.td.data(id: o.id)
 					end
 				end
 			end
 		end
 
 		super
+	end
+
+	def tick
+		element.css('.timer td[data-id]').each {|e|
+			unless (timer = e.inner_text).empty?
+				minutes, seconds = timer.split(':').map(&:to_i)
+
+				if minutes == 0 && seconds == 1
+					e.inner_text = ''
+				elsif seconds == 0
+					e.inner_text = "%d:59" % (minutes - 1)
+				else
+					e.inner_text = "%d:%02d" % [minutes, seconds - 1]
+				end
+
+				if minutes >= 3
+					e[:class] = :high
+				elsif minutes >= 1
+					e[:class] = :medium
+				else
+					e[:class] = :low
+				end
+			end
+		}
+	end
+
+	def update(details)
+		details.__send__(self.class.name.match(/([^:]+)$/)[1].downcase).each {|o|
+			timer = element.at_css(".timer td[data-id='#{o.id}']")
+			icon  = element.at_css(".icon td[data-id='#{o.id}'] img")
+			owner = (icon.class_names - [:ruin, :camp, :tower, :keep, :castle]).first || :neutral
+
+			if owner != o.owner
+				icon.remove_class owner
+
+				unless o.owner == :neutral
+					icon.add_class o.owner
+				end
+
+				unless owner == :neutral
+					timer.inner_text = '5:00'
+				end
+			end
+		}
 	end
 
 	css do
@@ -238,6 +280,65 @@ class Map < Lissio::Component
 								height 24.px
 								width  24.px
 							end
+
+							rule '&.camp' do
+								content 'url(img/camp.png)'
+
+								%w[red blue green].each do |color|
+									rule "&.#{color}" do
+										content "url(img/camp.#{color}.png)"
+									end
+								end
+							end
+
+							rule '&.tower' do
+								content 'url(img/tower.png)'
+
+								%w[red blue green].each do |color|
+									rule "&.#{color}" do
+										content "url(img/tower.#{color}.png)"
+									end
+								end
+							end
+
+							rule '&.keep' do
+								content 'url(img/keep.png)'
+
+								%w[red blue green].each do |color|
+									rule "&.#{color}" do
+										content "url(img/keep.#{color}.png)"
+									end
+								end
+							end
+
+							rule '&.castle' do
+								content 'url(img/castle.png)'
+
+								%w[red blue green].each do |color|
+									rule "&.#{color}" do
+										content "url(img/castle.#{color}.png)"
+									end
+								end
+							end
+
+							rule '&.ruin' do
+								{ "Carver's Ascent"        => 'carvers_ascent',
+								  'Orchard Overlook'       => 'orchard_overlook',
+								  "Bauer's Estate"         => 'bauers_estate',
+								  "Battle's Hollow"        => 'battles_hollow',
+								  'Temple of Lost Prayers' => 'temple_of_lost_prayers'
+								}.each {|name, path|
+									rule %Q{&[data-name="#{name}"]} do
+										content "url(img/#{path}.png)"
+
+										%w[red blue green].each do |color|
+											rule "&.#{color}" do
+												content "url(img/#{path}.#{color}.png)"
+											end
+										end
+									end
+								}
+							end
 						end
 					end
 				end
@@ -252,7 +353,7 @@ class Map < Lissio::Component
 								(', 0 0 1px #b20000' * 10)
 						end
 
-						rule '&.mid' do
+						rule '&.medium' do
 							style 'text-shadow',
 								(', 0 0 2px #ff6000' * 10)[1 .. -1] +
 								(', 0 0 1px #ff6000' * 10)

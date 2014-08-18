@@ -14,6 +14,8 @@ require 'overwolf'
 
 require 'browser/screen'
 require 'browser/storage'
+require 'browser/delay'
+require 'browser/interval'
 require 'browser/console'
 
 require 'match'
@@ -25,6 +27,8 @@ require 'map/red'
 require 'map/eternal'
 
 class Application < Lissio::Application
+	expose :@map
+
 	def initialize(*)
 		super
 
@@ -35,7 +39,25 @@ class Application < Lissio::Application
 		end
 
 		route '/tracker' do
-			load Map.const_get(map.capitalize).new
+			load @map = Map.const_get(map.capitalize).new
+
+			Match.find(world).then {|m|
+				updater = -> {
+					m.details.then {|d|
+						@map.update(d)
+
+						updater.after(5)
+					}
+				}
+
+				updater.()
+			}.rescue {|e|
+				$console.log e
+			}
+
+			every 1 do
+				@map.tick
+			end
 		end
 	end
 
@@ -90,10 +112,6 @@ class Application < Lissio::Application
 	end
 	expose :map=
 
-	attr_accessor :match
-	expose :match
-	expose :match=
-
 	html do
 		div.container! 'Loading...'
 	end
@@ -118,13 +136,5 @@ class Application < Lissio::Application
 		style 'text-shadow',
 			(', 0 0 2px black' * 10)[1 .. -1] +
 			(', 0 0 1px black' * 10)
-
-		#rule '#container' do
-			#width 180.px
-			#height 180.px
-			#border 1.px, :solid, :red
-
-			#margin 20.px
-		#end
 	end
 end

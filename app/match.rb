@@ -134,7 +134,7 @@ class Match
 				}
 
 				@hash = Hash[data[:objectives].map {|o|
-					[o.id, Objective.new(o[:id], o[:owner].downcase, o[:owner_guild])]
+					[o[:id], Objective.new(o[:id], o[:owner].downcase, o[:owner_guild])]
 				}]
 			end
 

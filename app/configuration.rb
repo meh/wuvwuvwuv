@@ -69,7 +69,15 @@ class Configuration < Lissio::Component
 
 			if Overwolf.available?
 				Overwolf::Window.open('TrackerWindow').then {|w|
-					w.restore
+					if w.visible?
+						w.close
+
+						Overwolf::Window.open('TrackerWindow').then {|w|
+							w.restore
+						}
+					else
+						w.restore
+					end
 				}.then {
 					Overwolf::Window.current
 				}.then {|w|
