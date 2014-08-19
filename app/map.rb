@@ -118,54 +118,6 @@ class Map < Lissio::Component
 	end
 
 	def render
-		element.inner_dom do |_|
-			_.table do
-				_.tr.icon do
-					objectives.each do |o|
-						if o.separator?
-							_.td.separator
-							_.td.separator.space
-							next
-						end
-
-						_.td.data(id: o.id) do
-							_.img(class: o.type).data(name: o.name)
-						end
-					end
-				end
-
-				_.tr.name do
-					objectives.each do |o|
-						if o.separator?
-							_.td.separator
-							_.td.separator.space
-							next
-						end
-
-						_.td.data(id: o.id) do
-							if o.ruin?
-								_.div o.location.upcase
-							else
-								_.div o.alias || o.name
-							end
-						end
-					end
-				end
-
-				_.tr.timer do
-					objectives.each do |o|
-						if o.separator?
-							_.td.separator
-							_.td.separator.space
-							next
-						end
-
-						_.td.data(id: o.id)
-					end
-				end
-			end
-		end
-
 		super
 	end
 
@@ -183,6 +135,36 @@ class Map < Lissio::Component
 		if el = element.at_css(".icon td[data-id='#{id}'] img")
 			(el.class_names - [:ruin, :camp, :tower, :keep, :castle]).first || :neutral
 		end
+	end
+
+	def storage(name)
+		Application.storage(name)
+	end
+
+	def start(timers, tiers)
+		epoch = Time.new.to_i
+
+		timers.each {|id, (_, at)|
+			difference = epoch - at
+			timer      = element.at_css(".timer td[data-id='#{id}']")
+
+			next unless timer
+			next if type_for(id) == :ruin
+
+			if difference > 0 && difference <= 5 * 60
+				remaining = (5 * 60) - difference
+				minutes   = (remaining / 60).floor
+				seconds   = remaining % 60
+
+				timer.inner_text = '%d:%02d' % [minutes, seconds]
+			end
+		}
+
+		tiers.each {|id, tier|
+			if el = element.at_css(".icon td[data-id='#{id}'] .tier")
+				el.inner_text = tier
+			end
+		}
 	end
 
 	def tick
@@ -207,24 +189,27 @@ class Map < Lissio::Component
 				end
 			end
 		}
-	end
 
-	def start(timers)
-		epoch = Time.new.to_i
+		storage(:sieges).each {|id, at|
+			if el = element.at_css(".icon td[data-id='#{id}'] .siege")
+				diff = Time.new.to_i - at
 
-		timers.each {|id, (_, at)|
-			difference = epoch - at
-			timer      = element.at_css(".timer td[data-id='#{id}']")
-
-			next unless timer
-			next if type_for(id) == :ruin
-
-			if difference > 0 && difference <= 5 * 60
-				remaining = (5 * 60) - difference
-				minutes   = (remaining / 60).floor
-				seconds   = remaining % 60
-
-				timer.inner_text = '%d:%02d' % [minutes, seconds]
+				if diff > 60 * 60
+					storage(:sieges).delete(id)
+					el.inner_text = ''
+				elsif diff > 30 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :medium
+					el.add_class :high
+				elsif diff > 10 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :high
+					el.add_class :medium
+				else
+					el.inner_text = '+'
+					el.remove_class :medium, :high
+					el.add_class :low
+				end
 			end
 		}
 	end
@@ -233,6 +218,8 @@ class Map < Lissio::Component
 		details.__send__(name).each {|o|
 			timer = element.at_css(".timer td[data-id='#{o.id}']")
 			icon  = element.at_css(".icon td[data-id='#{o.id}'] img")
+			tier  = element.at_css(".icon td[data-id='#{o.id}'] .tier")
+			siege = element.at_css(".icon td[data-id='#{o.id}'] .siege")
 			owner = owner_for(o.id)
 
 			if owner != o.owner
@@ -244,9 +231,87 @@ class Map < Lissio::Component
 
 				if type_for(o.id) != :ruin && owner != :neutral
 					timer.inner_text = '5:00'
+					tier.inner_text  = ''
+					siege.inner_text = ''
+
+					storage(:tiers).delete(o.id.to_s)
 				end
 			end
 		}
+	end
+
+	on :click, '.icon img' do |e|
+		id = e.on.parent.data[:id]
+
+		next if type_for(id) == :ruin
+
+		storage(:tiers).tap {|s|
+			t  = s[id] || 0
+			el = element.at_css(".icon td[data-id='#{id}'] .tier")
+
+			if t == 3 || (t == 2 && type_for(id) == :camp)
+				s.delete(id)
+				el.inner_text = ''
+			else
+				s[id] = el.inner_text = t + 1
+			end
+		}
+	end
+
+	on 'context:menu', '.icon img' do |e|
+		id = e.on.parent.data[:id]
+
+		storage(:sieges)[id] = Time.new.to_i
+	end
+
+	html do |_|
+		_.table do
+			_.tr.icon do
+				objectives.each do |o|
+					if o.separator?
+						_.td.separator
+						_.td.separator.space
+						next
+					end
+
+					_.td.data(id: o.id) do
+						_.div.siege
+						_.div.tier
+						_.img(class: o.type).data(name: o.name)
+					end
+				end
+			end
+
+			_.tr.name do
+				objectives.each do |o|
+					if o.separator?
+						_.td.separator
+						_.td.separator.space
+						next
+					end
+
+					_.td.data(id: o.id) do
+						if o.ruin?
+							_.div o.location.upcase
+						else
+							_.div o.alias || o.name
+						end
+					end
+				end
+			end
+
+			_.tr.timer do
+				objectives.each do |o|
+					if o.separator?
+						_.td.separator
+						_.td.separator.space
+						next
+					end
+
+					_.td.data(id: o.id)
+				end
+			end
+		end
 	end
 
 	css do
@@ -280,14 +345,23 @@ class Map < Lissio::Component
 				rule 'td' do
 					text align: :center
 					padding 0
+					position :relative
 					width 40.px
 
 					rule '&:first-child' do
 						padding left: 3.px
+
+						rule '.siege' do
+							left 9.px
+						end
 					end
 
 					rule '&:last-child' do
 						padding right: 3.px
+
+						rule '.tier' do
+							right 9.px
+						end
 					end
 
 					rule '&.separator' do
@@ -298,6 +372,38 @@ class Map < Lissio::Component
 						rule '&.space' do
 							border :none
 							width 1.px
+						end
+					end
+
+					rule '.tier' do
+						position :absolute
+						top 10.px
+						right 6.px
+						font size: 14.px
+					end
+
+					rule '.siege' do
+						position :absolute
+						top 10.px
+						left 6.px
+						font size: 14.px
+
+						rule '&.high' do
+							style 'text-shadow',
+								(', 0 0 2px #b20000' * 10)[1 .. -1] +
+								(', 0 0 1px #b20000' * 10)
+						end
+
+						rule '&.medium' do
+							style 'text-shadow',
+								(', 0 0 2px #ff6000' * 10)[1 .. -1] +
+								(', 0 0 1px #ff6000' * 10)
+						end
+
+						rule '&.low' do
+							style 'text-shadow',
+								(', 0 0 2px #007a20' * 10)[1 .. -1] +
+								(', 0 0 1px #007a20' * 10)
 						end
 					end
 				end

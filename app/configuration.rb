@@ -68,15 +68,19 @@ class Configuration < Lissio::Component
 			Application.map   = map
 
 			if Overwolf.available?
-				Overwolf::Window.open('TrackerWindow').then {|w|
-					if w.visible?
-						w.close
+				Promise.when(Overwolf::Window.open('TrackerWindow'),
+				             Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
+					name   = c.visible? ? 'TrackerClickableWindow' : 'TrackerWindow'
+					window = c.visible? ? c : u
 
-						Overwolf::Window.open('TrackerWindow').then {|w|
+					if window.visible?
+						window.close
+
+						Overwolf::Window.open(name).then {|w|
 							w.restore
 						}
 					else
-						w.restore
+						window.restore
 					end
 				}.then {
 					Overwolf::Window.current

@@ -37,13 +37,30 @@
 					"width": 1,
 					"height": 1
 				}
+			},
+
+			"TrackerClickableWindow": {
+				"file": "index.html",
+				"transparent": true,
+				"show_in_taskbar": false,
+
+				"size": {
+					"width": 1,
+					"height": 1
+				}
 			}
+
 		},
 		"hotkeys": {
 			"toggle": {
-				"title": "Show/Hide",
+				"title": "Toggle Tracker",
 				"action-type": "custom",
 				"default": "Apps"
+			},
+			"clickthrough": {
+				"title": "Toggle Tracker Click-Through",
+				"action-type": "custom",
+				"default": "Ctrl+Apps"
 			}
 		}
 	}

@@ -40,35 +40,36 @@ class Application < Lissio::Application
 
 		route '/tracker' do
 			load @map = Map.const_get(map.capitalize).new
-			@map.start(storage[:timers])
+			@map.start(storage(:timers).to_h, storage(:tiers).to_h)
 
 			Match.find(world).then {|m|
 				updater = -> {
 					m.details.then {|d|
-						timers = storage[:timers]
-						epoch  = Time.now.to_i
+						epoch = Time.now.to_i
 
 						[d.red, d.blue, d.green, d.eternal].each {|w|
 							w.each {|o|
 								id = o.id.to_s
 
-								if timers.has_key? id
-									owner, _ = timers[id]
+								if storage(:timers).has_key? id
+									owner, _ = storage(:timers)[id]
 
 									if owner != o.owner
-										timers[id] = [o.owner, epoch]
+										storage(:timers)[id] = [o.owner, epoch]
+										storage(:tiers).delete(id)
+										storage(:sieges).delete(id)
 									end
 								else
-									timers[id] = [o.owner, 0]
+									storage(:timers)[id] = [o.owner, 0]
 								end
 							}
 						}
 
-						storage[:timers] = timers
-
 						@map.update(d)
 
 						updater.after(2)
+					}.rescue {|e|
+						$console.log e.inspect
 					}
 				}
 
@@ -86,19 +87,32 @@ class Application < Lissio::Application
 
 		if Overwolf.available?
 			Overwolf::Window.current.then {|w|
-				if w.id.end_with? "TrackerWindow"
+				if w.id.end_with?("TrackerWindow") || w.id.end_with?("TrackerClickableWindow")
 					w.resize($window.screen.width, 300)
 					w.move(0, 45)
 
 					@router.navigate '/tracker'
 
 					Overwolf::Settings.hotkey 'toggle' do
-						Overwolf::Window.current.then {|w|
-							if w.visible?
-								w.minimize
+						Overwolf::Window.current.then {|i|
+							if i.visible?
+								i.minimize
 							else
-								w.restore
+								i.restore
 							end
+						}
+					end
+					
+					Overwolf::Settings.hotkey 'clickthrough' do
+						Overwolf::Window.current.then {|o|
+							name = w.id.end_with?('TrackerWindow') ?
+								'TrackerClickableWindow' : 'TrackerWindow'
+
+							Overwolf::Window.open(name).then {|i|
+								i.restore
+							}.then {
+								o.close
+							}
 						}
 					end
 				else
@@ -112,30 +126,34 @@ class Application < Lissio::Application
 		element.at_css('#container').inner_dom = component.render
 	end
 
-	def storage
-		$window.storage(:wvw)
+	def storage(part)
+		$window.storage(part)
 	end
+	expose :storage
 
 	def world
-		storage[:world] rescue nil
+		storage(:state)[:world] rescue nil
 	end
 	expose :world
 
 	def world=(value)
-		if storage[:world] != value
-			storage[:timers] = {}
-			storage[:world]  = value
+		if storage(:state)[:world] != value
+			storage(:state)[:world] = value
+
+			storage(:timers).clear
+			storage(:tiers).clear
+			storage(:sieges).clear
 		end
 	end
 	expose :world=
 
 	def map
-		storage[:map] rescue nil
+		storage(:state)[:map] rescue nil
 	end
 	expose :map
 
 	def map=(value)
-		storage[:map] = value
+		storage(:state)[:map] = value
 	end
 	expose :map=
 
