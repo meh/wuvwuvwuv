@@ -180,12 +180,16 @@ class Map < Lissio::Component
 					e.inner_text = "%d:%02d" % [minutes, seconds - 1]
 				end
 
-				if minutes >= 3
+				if minutes == 4 && seconds > 50
+					e[:class] = :highest
+				elsif minutes >= 3
 					e[:class] = :high
 				elsif minutes >= 1
 					e[:class] = :medium
-				else
+				elsif seconds > 10
 					e[:class] = :low
+				else
+					e[:class] = :lowest
 				end
 			end
 		}
@@ -197,17 +201,21 @@ class Map < Lissio::Component
 				if diff > 60 * 60
 					storage(:sieges).delete(id)
 					el.inner_text = ''
+				elsif diff > 55 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :medium, :high
+					el.add_class :highest
+				elsif diff > 50 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :medium, :highest
+					el.add_class :high
 				elsif diff > 30 * 60
 					el.inner_text = '+'
-					el.remove_class :low, :medium
-					el.add_class :high
-				elsif diff > 10 * 60
-					el.inner_text = '+'
-					el.remove_class :low, :high
+					el.remove_class :low, :high, :highest
 					el.add_class :medium
 				else
 					el.inner_text = '+'
-					el.remove_class :medium, :high
+					el.remove_class :medium, :high, :highest
 					el.add_class :low
 				end
 			end
@@ -314,26 +322,58 @@ class Map < Lissio::Component
 		end
 	end
 
+	css! <<-CSS
+		@-webkit-keyframes blink { 
+			0% { opacity: 1.0; }
+			50% { opacity: 0.0; }
+			100% { opacity: 1.0; }
+		}
+	CSS
+
 	css do
 		text align: :center
 		font size: 14.px
+
+		rule '.highest' do
+			text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
+			             (', 0 0 1px #b20000' * 10)
+
+			animation 'blink 1s linear infinite'
+		end
+
+		rule '.high' do
+			text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
+			             (', 0 0 1px #b20000' * 10)
+		end
+
+		rule '.medium' do
+			text shadow: (', 0 0 2px #ff6000' * 10)[1 .. -1] +
+			             (', 0 0 1px #ff6000' * 10)
+		end
+
+		rule '.low' do
+			text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
+			             (', 0 0 1px #007a20' * 10)
+		end
+
+		rule '.lowest' do
+			text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
+			             (', 0 0 1px #007a20' * 10)
+
+			animation 'blink 1s linear infinite'
+		end
 
 		rule 'table' do
 			border spacing: 0
 			display 'inline-block'
 
-			style 'background-image', '-webkit-gradient(
-				linear, left top, left bottom, from(rgba(0,0,0,0.15)),
-				to(rgba(0,0,0,0))
-			)'
-
-			style 'background-image', '-moz-linear-gradient(
-				rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0)
-			)'
+			background image: 'linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(0,0,0,0))'
 
 			border style: :solid,
 			       width: [2.px, 0, 0, 0],
 			       image: 'linear-gradient(to right, rgba(0, 0, 0, 0), black, rgba(0, 0, 0, 0)) 1'
+
+			padding bottom: 10.px
 
 			rule 'tr' do
 				rule '&:first-child' do
@@ -388,23 +428,6 @@ class Map < Lissio::Component
 						left 6.px
 						font size: 14.px
 
-						rule '&.high' do
-							style 'text-shadow',
-								(', 0 0 2px #b20000' * 10)[1 .. -1] +
-								(', 0 0 1px #b20000' * 10)
-						end
-
-						rule '&.medium' do
-							style 'text-shadow',
-								(', 0 0 2px #ff6000' * 10)[1 .. -1] +
-								(', 0 0 1px #ff6000' * 10)
-						end
-
-						rule '&.low' do
-							style 'text-shadow',
-								(', 0 0 2px #007a20' * 10)[1 .. -1] +
-								(', 0 0 1px #007a20' * 10)
-						end
 					end
 				end
 
@@ -488,24 +511,6 @@ class Map < Lissio::Component
 				rule '&.timer' do
 					rule 'td' do
 						padding top: 5.px
-
-						rule '&.high' do
-							style 'text-shadow',
-								(', 0 0 2px #b20000' * 10)[1 .. -1] +
-								(', 0 0 1px #b20000' * 10)
-						end
-
-						rule '&.medium' do
-							style 'text-shadow',
-								(', 0 0 2px #ff6000' * 10)[1 .. -1] +
-								(', 0 0 1px #ff6000' * 10)
-						end
-
-						rule '&.low' do
-							style 'text-shadow',
-								(', 0 0 2px #007a20' * 10)[1 .. -1] +
-								(', 0 0 1px #007a20' * 10)
-						end
 					end
 				end
 			end

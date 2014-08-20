@@ -86,13 +86,14 @@ class Match
 		}
 	end
 
-	attr_reader :id, :start, :end
+	attr_reader :id, :start, :end, :region
 	attr_reader :blue, :red, :green
 
 	def initialize(data)
-		@id    = data[:wvw_match_id]
-		@start = Time.parse(data[:start_time])
-		@end   = Time.parse(data[:end_time])
+		@id     = data[:wvw_match_id]
+		@start  = Time.parse(data[:start_time])
+		@end    = Time.parse(data[:end_time])
+		@region = data[:red_world_id].to_s[0] == ?1 ? :na : :eu
 
 		@blue  = World.new(data[:blue_world_id], WORLDS[data[:blue_world_id]])
 		@red   = World.new(data[:red_world_id], WORLDS[data[:red_world_id]])
@@ -126,11 +127,13 @@ class Match
 			Objective = Struct.new(:id, :owner, :guild)
 			Bonus     = Struct.new(:type, :owner)
 
+			attr_reader :scores, :bonuses
+
 			def initialize(data)
 				@scores = Scores.new(*data[:scores])
 
 				@bonuses = data[:bonuses].map {|b|
-					Bonus.new(b[:type], b[:owner])
+					Bonus.new(b[:type], b[:owner].downcase)
 				}
 
 				@hash = Hash[data[:objectives].map {|o|

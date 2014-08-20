@@ -9,8 +9,8 @@
 		"version": "0.1.0",
 		"author": "meh.",
 
-		"icon": "icon.png",
-		"gray_icon": "icon.gray.png",
+		"icon": "img/icon.png",
+		"gray_icon": "img/icon.gray.png",
 
 		"minimum-overwolf-version": "0.77.10"
 	},
@@ -20,10 +20,11 @@
 		"windows": {
 			"MainWindow": {
 				"file": "index.html",
+				"transparent": true,
 
 				"size": {
-					"width":  200,
-					"height": 340
+					"width":  300,
+					"height": 400
 				}
 			},
 
@@ -62,6 +63,13 @@
 				"action-type": "custom",
 				"default": "Ctrl+Apps"
 			}
+		},
+
+		"externally_connectable": {
+			"matches": [
+				"http://*.guildwars2.com",
+				"https://*.guildwars2.com",
+			]
 		}
 	}
 }

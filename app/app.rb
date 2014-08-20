@@ -19,6 +19,7 @@ require 'browser/interval'
 require 'browser/console'
 
 require 'match'
+require 'rank'
 require 'configuration'
 require 'map'
 require 'map/green'
@@ -144,6 +145,8 @@ class Application < Lissio::Application
 			storage(:tiers).clear
 			storage(:sieges).clear
 		end
+
+		value
 	end
 	expose :world=
 
@@ -178,8 +181,7 @@ class Application < Lissio::Application
 		style '-webkit-font-smoothing', 'subpixel-antialiased'
 
 		color :white
-		style 'text-shadow',
-			(', 0 0 2px black' * 10)[1 .. -1] +
-			(', 0 0 1px black' * 10)
+		text shadow: (', 0 0 2px black' * 10)[1 .. -1] +
+		             (', 0 0 1px black' * 10)
 	end
 end
