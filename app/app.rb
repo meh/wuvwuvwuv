@@ -76,7 +76,7 @@ class Application < Lissio::Application
 						}
 
 						@self.update(d)
-
+					}.always {
 						updater.after(interval)
 					}
 				}
@@ -125,8 +125,6 @@ class Application < Lissio::Application
 				else
 					@router.navigate '/select'
 				end
-			}.rescue {|e|
-				$window.alert e.inspect
 			}
 		end
 	end
