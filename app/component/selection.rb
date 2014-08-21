@@ -101,7 +101,7 @@ module Component
 				update
 			end
 	
-			every 15 * 60 do
+			every 60 do
 				update
 			end
 		end
