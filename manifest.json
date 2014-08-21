@@ -67,8 +67,7 @@
 
 		"externally_connectable": {
 			"matches": [
-				"http://*.guildwars2.com",
-				"https://*.guildwars2.com",
+				"http://*.guildwars2.com"
 			]
 		}
 	}

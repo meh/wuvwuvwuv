@@ -10,10 +10,12 @@
 
 class Rank
 	def self.fetch(region)
-		Browser::HTTP.get("https://leaderboards.guildwars2.com/en/#{region}/wvw") {|req|
+		Browser::HTTP.get("http://leaderboards.guildwars2.com/en/#{region}/wvw") {|req|
 			req.headers.clear
 		}.then {|res|
-			Hash[res.text.scan(%r{class=".*?rank number">[\s\S]*?>\s*(\d+)[\s\S]*?class="name text">\s*([\w ]+)}m).map {|id, name|
+			text = res.text.gsub('&#x27;', ?')
+
+			Hash[text.scan(%r{class=".*?rank number">[\s\S]*?>\s*(\d+)[\s\S]*?class="name text">\s*([\w' ]+)}m).map {|id, name|
 				[name.strip, id.to_i]
 			}]
 		}

@@ -20,28 +20,32 @@ require 'browser/console'
 
 require 'match'
 require 'rank'
-require 'configuration'
-require 'map'
-require 'map/green'
-require 'map/blue'
-require 'map/red'
-require 'map/eternal'
+
+require 'component/configuration'
+require 'component/selection'
+require 'component/tracker'
 
 class Application < Lissio::Application
-	expose :@map
-
 	def initialize(*)
 		super
 
 		router.fragment!
 
-		route '/configuration' do
-			load Configuration.new
+		route '/select' do
+			load Component::Selection.new
+			resize!
+		end
+
+		route '/config' do
+			load Component::Configuration.new
+			resize!
 		end
 
 		route '/tracker' do
-			load @map = Map.const_get(map.capitalize).new
-			@map.start(storage(:timers).to_h, storage(:tiers).to_h)
+			load Component::Tracker.const_get(map.capitalize).new
+			move!
+
+			@self.start(storage(:timers).to_h, storage(:tiers).to_h)
 
 			Match.find(world).then {|m|
 				updater = -> {
@@ -66,11 +70,9 @@ class Application < Lissio::Application
 							}
 						}
 
-						@map.update(d)
+						@self.update(d)
 
-						updater.after(2)
-					}.rescue {|e|
-						$console.log e.inspect
+						updater.after(interval)
 					}
 				}
 
@@ -78,7 +80,7 @@ class Application < Lissio::Application
 			}
 
 			every 1 do
-				@map.tick
+				@self.tick
 			end
 		end
 	end
@@ -90,9 +92,6 @@ class Application < Lissio::Application
 			Overwolf::Window.current.then {|w|
 				if w.id.end_with?("TrackerWindow") || w.id.end_with?("TrackerClickableWindow")
 					w.resize($window.screen.width, 300)
-					w.move(0, 45)
-
-					@router.navigate '/tracker'
 
 					Overwolf::Settings.hotkey 'toggle' do
 						Overwolf::Window.current.then {|i|
@@ -116,14 +115,19 @@ class Application < Lissio::Application
 							}
 						}
 					end
+
+					@router.navigate '/tracker'
 				else
-					@router.navigate '/configuration'
+					@router.navigate '/select'
 				end
+			}.rescue {|e|
+				$window.alert e.inspect
 			}
 		end
 	end
 
 	def load(component)
+		@self = component
 		element.at_css('#container').inner_dom = component.render
 	end
 
@@ -159,6 +163,70 @@ class Application < Lissio::Application
 		storage(:state)[:map] = value
 	end
 	expose :map=
+
+	def size
+		storage(:state)[:size] || :small
+	end
+	expose :size
+
+	def size=(value)
+		storage(:state)[:size] = value
+		element.remove_class(:small, :normal, :large, :larger)
+		element.add_class(value)
+
+		resize!
+	end
+	expose :size=
+
+	def interval
+		storage(:state)[:interval] || 2
+	end
+	expose :interval
+
+	def interval=(value)
+		storage(:state)[:interval] = value
+	end
+	expose :interval=
+
+	def move!
+		y = case size
+				when :small  then 41
+				when :normal then 45
+				when :large  then 50
+				when :larger then 55
+				end
+
+		if Overwolf.available?
+			Overwolf::Window.current.then {|w|
+				w.move(0, y)
+			}
+		end
+	end
+
+	def resize!
+		width = case size
+						when :small  then 260
+						when :normal then 300
+						when :large  then 320
+						when :larger then 360
+						end
+
+		if Overwolf.available?
+			Overwolf::Window.current.then {|w|
+				w.resize(width, 400)
+			}
+		else
+			element.at_css('#container').style \
+				margin: 20.px,
+			  border: '2px solid black',
+			  width: width.px,
+			  height: 400.px
+		end
+	end
+
+	on :render do
+		element.add_class(size)
+	end
 
 	html do
 		div.container! 'Loading...'
