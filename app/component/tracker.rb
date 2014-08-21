@@ -551,24 +551,6 @@ module Component
 							end
 						end
 					end
-
-					rule '&.eternal' do
-						font size: 10.px
-
-						rule 'table' do
-							rule 'tr' do
-								rule 'td' do
-									width 34.px
-								end
-
-								rule '&.timer' do
-									rule 'td' do
-										font size: 14.px
-									end
-								end
-							end
-						end
-					end
 				end
 			end
 
@@ -605,9 +587,51 @@ module Component
 			end
 
 			media '(max-width: 1280px)' do
+				rule 'html body.small', 'html body.normal' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 10.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 34.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 14.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
 			end
 
 			media '(max-width: 1366px)' do
+				rule 'html body.small', 'html body.normal' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 10.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 34.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 14.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
 			end
 
 			media '(max-width: 1440px)' do
