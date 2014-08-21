@@ -28,6 +28,12 @@ module Component
 			donate gold and siege.
 		MD
 
+		on :render do
+			element.css('a').each {|el|
+				el[:target] = :_blank
+			}
+		end
+
 		css do
 			padding right: 30.px
 			text align: :justify
