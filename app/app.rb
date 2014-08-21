@@ -19,10 +19,10 @@ require 'browser/interval'
 require 'browser/console'
 
 require 'match'
-require 'rank'
 
-require 'component/configuration'
 require 'component/selection'
+require 'component/help'
+require 'component/configuration'
 require 'component/tracker'
 
 class Application < Lissio::Application
@@ -33,6 +33,11 @@ class Application < Lissio::Application
 
 		route '/select' do
 			load Component::Selection.new
+			resize!
+		end
+
+		route '/help' do
+			load Component::Help.new
 			resize!
 		end
 
@@ -232,15 +237,21 @@ class Application < Lissio::Application
 		div.container! 'Loading...'
 	end
 
-	css! do
-		rule 'html', 'body' do
-			width  100.%
-			height 100.%
+	css! <<-CSS
+		html, body {
+			width: 100%;
+			height: 100%;
 
-			overflow :hidden
-			user_select :none
-		end
-	end
+			overflow: hidden;
+			user-select: none;
+		}
+
+		@-webkit-keyframes blink {
+			0% { opacity: 1.0; }
+			50% { opacity: 0.0; }
+			100% { opacity: 1.0; }
+		}
+	CSS
 
 	css do
 		font family: 'Text',

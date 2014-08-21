@@ -8,8 +8,48 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 #++
 
+require 'lissio/component/markdown'
+
 module Component
-	class Configuration < Lissio::Component
+	class Text < Lissio::Component::Markdown
+		content <<-MD.gsub(/^\t{3}/m, '')
+			To choose your world just click on *World?* and select the right one from
+			the dropdown menu.
+
+			Every borderland item includes the rank of the world, the scores made by
+			each world in that map and the owner of bloodlust.
+
+			To open the tracker click on the scout icon for the map you want to
+			track; left-clicking one of the objective icons will increase the tier
+			tracker, right-clicking will reset the siege refresh tracker.
+
+			WUV³ is developed by **meh.6784** and the source is available on
+			[GitHub](https://github.com/meh/wuvwuvwuv); if you like it feel free to
+			donate gold and siege.
+		MD
+
+		css do
+			padding right: 30.px
+			text align: :justify
+
+			rule 'a' do
+				font weight: :bold
+				color :white
+				text decoration: :none,
+				     shadow: (', 0 0 2px black' * 10)[1 .. -1] +
+				             (', 0 0 1px black' * 10)
+
+				rule '&:hover' do
+					color :white
+					text decoration: :none,
+					     shadow: (', 0 0 2px #951111' * 10)[1 .. -1] +
+							         (', 0 0 1px #951111' * 10)
+				end
+			end
+		end
+	end
+
+	class Help < Lissio::Component
 		on 'mouse:down' do
 			next unless Overwolf.available?
 	
@@ -19,29 +59,10 @@ module Component
 		end
 	
 		on :click, '.fa-arrow-circle-left' do
-			Application.size     = element.at_css('.size td:nth-child(2) select').value
-			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
-
 			Application.navigate '/select'
 		end
 
-		on :change, '.size td:nth-child(2) select' do
-			update
-		end
-
-		on :render do
-			element.at_css(".size td:nth-child(2) select option[value='#{Application.size}']")[:selected] = :selected
-			element.at_css('.interval td:nth-child(2) input').value = Application.interval
-
-			update
-		end
-
-		def update
-			element.at_css('.size td:nth-child(2) .value').inner_text =
-				element.at_css('.size td:nth-child(2) select').value.capitalize
-		end
-
-		tag class: :configuration
+		tag class: :help
 
 		html do
 			div.icon do
@@ -50,36 +71,14 @@ module Component
 	
 			div.content do
 				div.header do
-					div.name 'Configuration'
+					div.name 'Help & About'
 					div.menu do
 						i.fa.fa[:arrow, :circle, :left]
 					end
 					div.style(clear: :both)
 				end
 
-				table do
-					tr.size do
-						td 'Interface Size :'
-						td do
-							div.value 'Normal'
-
-							select do
-								option(value: :small) { 'Small' }
-								option(value: :normal) { 'Normal' }
-								option(value: :large) { 'Large' }
-								option(value: :larger) { 'Larger' }
-							end
-						end
-					end
-
-					tr.interval do
-						td 'Update Every :'
-						td do
-							input.type(:text).max(1)
-							span ' seconds'
-						end
-					end
-				end
+				self << Text.new
 			end
 		end
 
@@ -124,51 +123,18 @@ module Component
 
 					margin 5.px, 0
 				end
-
-				rule 'table' do
-					rule 'td' do
-						position :relative
-						white space: :nowrap
-
-						rule '&:first-child' do
-							padding right: 7.px
-						end
-
-						rule 'select' do
-							position :absolute
-							top 0
-							left 0
-							opacity 0
-						end
-
-						rule 'input' do
-							background :transparent
-							border 0
-							display 'inline-block'
-							width 1.ch
-
-							color :white
-							text shadow: (', 0 0 2px black' * 10)[1 .. -1] +
-							             (', 0 0 1px black' * 10)
-
-							rule '&:focus' do
-								outline :none
-							end
-						end
-					end
-				end
 			end
 		end
 
 		css! do
 			rule 'body.small', 'body.normal' do
-				rule '.configuration' do
+				rule '.help' do
 					rule '.content' do
 						rule '.name' do
 							font size: 18.px
 						end
 
-						rule 'table' do
+						rule '.text' do
 							font size: 15.px
 						end
 					end
@@ -176,13 +142,13 @@ module Component
 			end
 	
 			rule 'body.large' do
-				rule '.configuration' do
+				rule '.help' do
 					rule '.content' do
 						rule '.name' do
 							font size: 19.px
 						end
 	
-						rule 'table' do
+						rule '.text' do
 							font size: 16.px
 						end
 					end
@@ -190,13 +156,13 @@ module Component
 			end
 	
 			rule 'body.larger' do
-				rule '.configuration' do
+				rule '.help' do
 					rule '.content' do
 						rule '.name' do
 							font size: 20.px
 						end
 	
-						rule 'table' do
+						rule '.text' do
 							font size: 17.px
 						end
 					end

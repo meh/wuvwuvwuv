@@ -272,8 +272,16 @@ module Component
 	
 			storage(:sieges)[id] = Time.new.to_i
 		end
+
+		on :render do
+			element.add_class name
+		end
+
+		tag class: :tracker
 	
 		html do |_|
+			_.div.control
+
 			_.table do
 				_.tr.icon do
 					objectives.each do |o|
@@ -322,18 +330,9 @@ module Component
 				end
 			end
 		end
-	
-		css! <<-CSS
-			@-webkit-keyframes blink {
-				0% { opacity: 1.0; }
-				50% { opacity: 0.0; }
-				100% { opacity: 1.0; }
-			}
-		CSS
-	
+
 		css do
 			text align: :center
-			font size: 14.px
 	
 			rule '.highest' do
 				text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
@@ -387,7 +386,6 @@ module Component
 						text align: :center
 						padding 0
 						position :relative
-						width 40.px
 	
 						rule '&:first-child' do
 							padding left: 3.px
@@ -406,7 +404,7 @@ module Component
 						end
 	
 						rule '&.separator' do
-							width 0
+							width! 0
 	
 							border right: [1.px, :solid, :black]
 	
@@ -511,6 +509,284 @@ module Component
 					rule '&.timer' do
 						rule 'td' do
 							padding top: 5.px
+						end
+					end
+				end
+			end
+		end
+
+		css! do
+#			rule '.tracker .control' do
+#				position :absolute
+#				top 0
+#				right 0
+#				border left: [1.px, :solid, :black]
+#				height 400.px
+#			end
+#
+#			rule 'body.small .tracker .control' do
+#				width 260.px
+#			end
+#
+#			rule 'body.normal .tracker .control' do
+#				width 300.px
+#			end
+#
+#			rule 'body.large .tracker .control' do
+#				width 320.px
+#			end
+#
+#			rule 'body.larger .tracker .control' do
+#				width 360.px
+#			end
+
+			rule 'body.small', 'body.normal' do
+				rule '.tracker' do
+					font size: 14.px
+
+					rule 'table' do
+						rule 'tr' do
+							rule 'td' do
+								width 40.px
+							end
+						end
+					end
+
+					rule '&.eternal' do
+						font size: 10.px
+
+						rule 'table' do
+							rule 'tr' do
+								rule 'td' do
+									width 34.px
+								end
+
+								rule '&.timer' do
+									rule 'td' do
+										font size: 14.px
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
+			rule 'body.large' do
+				rule '.tracker' do
+					font size: 15.px
+
+					rule 'table' do
+						rule 'tr' do
+							rule 'td' do
+								width 44.px
+							end
+						end
+					end
+				end
+			end
+
+			rule 'body.larger' do
+				rule '.tracker' do
+					font size: 16.px
+
+					rule 'table' do
+						rule 'tr' do
+							rule 'td' do
+								width 46.px
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1024px)' do
+				# RIP ;_;
+			end
+
+			media '(max-width: 1280px)' do
+			end
+
+			media '(max-width: 1366px)' do
+			end
+
+			media '(max-width: 1440px)' do
+				rule 'html body.small', 'html body.normal' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 10.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 38.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 14.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				rule 'html body.large' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 10.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 36.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 14.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1680px)' do
+				rule 'html body.small', 'html body.normal' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 13.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 48.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 14.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				rule 'html body.large' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 12.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 46.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 15.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				rule 'html body.larger' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 12.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 43.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 16.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1920px)' do
+				rule 'html body.small', 'html body.normal' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 14.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 50.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 14.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				rule 'html body.large' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 15.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 56.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 15.px
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				rule 'html body.larger' do
+					rule '.tracker' do
+						rule '&.eternal' do
+							font size: 15.px
+
+							rule 'table' do
+								rule 'tr' do
+									rule 'td' do
+										width 54.px
+									end
+
+									rule '&.timer' do
+										rule 'td' do
+											font size: 16.px
+										end
+									end
+								end
+							end
 						end
 					end
 				end

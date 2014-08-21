@@ -26,8 +26,12 @@ module Component
 			end
 		end
 
-		on :click, '.config' do
+		on :click, '.fa-gear' do
 			Application.navigate('/config')
+		end
+
+		on :click, '.fa-question-circle' do
+			Application.navigate('/help')
 		end
 	
 		on :click, '.match img' do |e|
@@ -77,7 +81,7 @@ module Component
 				element.at_css('.match .red .name').inner_text = m.red.name
 				element.at_css('.match .blue .name').inner_text = m.blue.name
 	
-				Rank.fetch(m.region).then {|ranks|
+				Match.ranks(m.region).then {|ranks|
 					element.at_css('.match .green .rank').inner_text = rank_for(ranks[m.green.name])
 					element.at_css('.match .red .rank').inner_text = rank_for(ranks[m.red.name])
 					element.at_css('.match .blue .rank').inner_text = rank_for(ranks[m.blue.name])
@@ -119,7 +123,8 @@ module Component
 			div.content do
 				div.world do
 					div.name 'World?'
-					div.config do
+					div.menu do
+						i.fa.fa[:question, :circle]
 						i.fa.fa[:gear]
 					end
 					div.style(clear: :both)
@@ -220,13 +225,16 @@ module Component
 						pointer events: :none
 					end
 	
-					rule '.config' do
+					rule '.menu' do
 						vertical align: :middle
 	
 						float :right
 						margin right: 10.px
 	
-						cursor :pointer
+						rule 'i' do
+							cursor :pointer
+							padding left: 7.px
+						end
 					end
 	
 					rule 'select' do

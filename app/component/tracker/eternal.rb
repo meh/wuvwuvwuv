@@ -171,23 +171,5 @@ module Component
 				location :c
 			end
 		end
-	
-		css do
-			font size: 10.px
-	
-			rule 'table' do
-				rule 'tr' do
-					rule 'td' do
-						width 34.px
-					end
-	
-					 rule '&.timer' do
-					 	 rule 'td' do
-						 	 font size: 14.px
-						 end
-					 end
-				end
-			end
-		end
 	end
 end

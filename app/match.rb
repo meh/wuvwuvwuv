@@ -66,6 +66,18 @@ class Match
 		1019 => 'Blackgate'
 	}
 
+	def self.ranks(region)
+		Browser::HTTP.get("http://leaderboards.guildwars2.com/en/#{region}/wvw") {|req|
+			req.headers.clear
+		}.then {|res|
+			text = res.text.gsub('&#x27;', ?')
+
+			Hash[text.scan(%r{class=".*?rank number">[\s\S]*?>\s*(\d+)[\s\S]*?class="name text">\s*([\w' ]+)}m).map {|id, name|
+				[name.strip, id.to_i]
+			}]
+		}
+	end
+
 	def self.find(world)
 		if world.is_a?(String)
 			world = WORLDS.key(world)
