@@ -92,8 +92,6 @@ module Component
 					element.at_css('.match .red .info').inner_dom = Info.new(d.red).render
 					element.at_css('.match .blue .info').inner_dom = Info.new(d.blue).render
 					element.at_css('.match .eternal .info').inner_dom = Info.new(d.eternal).render
-				}.rescue {|e|
-					$window.alert e.inspect
 				}
 			}
 		end
