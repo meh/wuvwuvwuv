@@ -24,8 +24,7 @@ module Component
 			tracker, right-clicking will reset the siege refresh tracker.
 
 			WUV³ is developed by **meh.6784** and the source is available on
-			[GitHub](https://github.com/meh/wuvwuvwuv); if you like it feel free to
-			donate gold and siege.
+			[GitHub](https://github.com/meh/wuvwuvwuv).
 		MD
 
 		on :render do
