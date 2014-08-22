@@ -125,19 +125,27 @@ module Component
 		def name
 			self.class.name.match(/([^:]+)$/)[1].downcase
 		end
+
+		def objective?(id)
+			id = id.to_i
+			objectives.any? { |o| o.id == id }
+		end
 	
 		def type_for(id)
-			if el = element.at_css(".icon td[data-id='#{id}'] img")
-				(el.class_names - [:red, :blue, :green]).first
-			end
+			next unless objective? id
+
+			(element.at_css(".icon td[data-id='#{id}'] img").class_names -
+				[:red, :blue, :green]).first
 		end
 	
 		def owner_for(id)
-			if el = element.at_css(".icon td[data-id='#{id}'] img")
-				(el.class_names - [:ruin, :camp, :tower, :keep, :castle]).first || :neutral
-			end
+			next unless objective? id
+
+			(element.at_css(".icon td[data-id='#{id}'] img").class_names -
+				[:ruin, :camp, :tower, :keep, :castle]).first || :neutral
 		end
-	
+
+
 		def storage(name)
 			Application.storage(name)
 		end
@@ -146,11 +154,11 @@ module Component
 			epoch = Time.new.to_i
 	
 			timers.each {|id, (_, at)|
+				next unless objective? id
+				next if type_for(id) == :ruin
+
 				difference = epoch - at
 				timer      = element.at_css(".timer td[data-id='#{id}']")
-	
-				next unless timer
-				next if type_for(id) == :ruin
 	
 				if difference > 0 && difference <= 5 * 60
 					remaining = (5 * 60) - difference
@@ -158,80 +166,106 @@ module Component
 					seconds   = remaining % 60
 	
 					timer.inner_text = '%d:%02d' % [minutes, seconds]
+					timer.add_class :active
+
+					if minutes == 4 && seconds > 50
+						timer.add_class :highest
+					elsif minutes >= 3
+						timer.add_class :high
+					elsif minutes >= 1
+						timer.add_class :medium
+					elsif seconds > 10
+						timer.add_class :low
+					else
+						timer.add_class :lowest
+					end
 				end
 			}
 	
 			tiers.each {|id, tier|
-				if el = element.at_css(".icon td[data-id='#{id}'] .tier")
-					el.inner_text = tier
+				next unless objective? id
+
+				element.at_css(".icon td[data-id='#{id}'] .tier").inner_text = tier
+			}
+
+			sieges
+		end
+	
+		def timers
+			element.css('.timer .active').each {|e|
+				minutes, seconds = e.inner_text.split(':').map(&:to_i)
+
+				if minutes == 0 && seconds == 1
+					e.inner_text = ''
+					e.remove_class :active, :lowest
+
+					next
+				end
+
+				if seconds == 0
+					e.inner_text = "%d:59" % (minutes - 1)
+				else
+					e.inner_text = "%d:%02d" % [minutes, seconds - 1]
+				end
+				
+				if minutes == 5 && seconds == 0
+					e.add_class :highest
+				elsif minutes == 4 && seconds == 50
+					e.remove_class :highest
+					e.add_class :high
+				elsif minutes == 3 && seconds == 0
+					e.remove_class :high
+					e.add_class :medium
+				elsif minutes == 1 && seconds == 0
+					e.remove_class :medium
+					e.add_class :low
+				elsif minutes == 0 && seconds == 10
+					e.remove_class :low
+					e.add_class :lowest
 				end
 			}
 		end
-	
-		def tick
-			element.css('.timer td[data-id]').each {|e|
-				unless (timer = e.inner_text).empty?
-					minutes, seconds = timer.split(':').map(&:to_i)
-	
-					if minutes == 0 && seconds == 1
-						e.inner_text = ''
-					elsif seconds == 0
-						e.inner_text = "%d:59" % (minutes - 1)
-					else
-						e.inner_text = "%d:%02d" % [minutes, seconds - 1]
-					end
-	
-					if minutes == 4 && seconds > 50
-						e[:class] = :highest
-					elsif minutes >= 3
-						e[:class] = :high
-					elsif minutes >= 1
-						e[:class] = :medium
-					elsif seconds > 10
-						e[:class] = :low
-					else
-						e[:class] = :lowest
-					end
-				end
-			}
-	
+
+		def sieges
 			storage(:sieges).each {|id, at|
-				if el = element.at_css(".icon td[data-id='#{id}'] .siege")
-					diff = Time.new.to_i - at
-	
-					if diff > 60 * 60
-						storage(:sieges).delete(id)
-						el.inner_text = ''
-					elsif diff > 55 * 60
-						el.inner_text = '+'
-						el.remove_class :low, :medium, :high
-						el.add_class :highest
-					elsif diff > 50 * 60
-						el.inner_text = '+'
-						el.remove_class :low, :medium, :highest
-						el.add_class :high
-					elsif diff > 30 * 60
-						el.inner_text = '+'
-						el.remove_class :low, :high, :highest
-						el.add_class :medium
-					else
-						el.inner_text = '+'
-						el.remove_class :medium, :high, :highest
-						el.add_class :low
-					end
+				next unless objective? id
+
+				el = element.at_css(".icon td[data-id='#{id}'] .siege")
+				diff = Time.new.to_i - at
+
+				if diff > 60 * 60
+					storage(:sieges).delete(id)
+					el.inner_text = ''
+				elsif diff > 55 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :medium, :high
+					el.add_class :highest
+				elsif diff > 50 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :medium, :highest
+					el.add_class :high
+				elsif diff > 30 * 60
+					el.inner_text = '+'
+					el.remove_class :low, :high, :highest
+					el.add_class :medium
+				else
+					el.inner_text = '+'
+					el.remove_class :medium, :high, :highest
+					el.add_class :low
 				end
 			}
 		end
 	
 		def update(details)
 			details.__send__(name).each {|o|
-				timer = element.at_css(".timer td[data-id='#{o.id}']")
-				icon  = element.at_css(".icon td[data-id='#{o.id}'] img")
-				tier  = element.at_css(".icon td[data-id='#{o.id}'] .tier")
-				siege = element.at_css(".icon td[data-id='#{o.id}'] .siege")
 				owner = owner_for(o.id)
 	
 				if owner != o.owner
+					icon  = element.at_css(".icon td[data-id='#{o.id}'] img")
+					tier  = element.at_css(".icon td[data-id='#{o.id}'] .tier")
+					siege = element.at_css(".icon td[data-id='#{o.id}'] .siege")
+					timer = element.at_css(".timer td[data-id='#{o.id}']")
+
 					icon.remove_class owner
 	
 					unless o.owner == :neutral
@@ -239,9 +273,10 @@ module Component
 					end
 	
 					if type_for(o.id) != :ruin && owner != :neutral
-						timer.inner_text = '5:00'
 						tier.inner_text  = ''
 						siege.inner_text = ''
+						timer.inner_text = '5:00'
+						timer.add_class :active
 	
 						storage(:tiers).delete(o.id.to_s)
 					end

@@ -85,7 +85,11 @@ class Application < Lissio::Application
 			}
 
 			every 1 do
-				@self.tick
+				@self.timers
+			end
+
+			every 60 do
+				@self.sieges
 			end
 		end
 	end
