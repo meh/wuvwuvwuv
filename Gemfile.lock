@@ -1,12 +1,6 @@
-PATH
-  remote: /home/meh/projects/opal/browser
-  specs:
-    opal-browser (0.2.0.beta1)
-      opal
-      paggio
-
-PATH
-  remote: /home/meh/projects/opal/lissio
+GIT
+  remote: git://github.com/meh/lissio.git
+  revision: 7cba2e97f44038c0048cf221947d2798f9a0f842
   specs:
     lissio (0.1.0.beta3)
       opal (>= 0.6.0)
@@ -14,8 +8,23 @@ PATH
       rack
       thor
 
-PATH
-  remote: /home/meh/projects/opal/opal
+GIT
+  remote: git://github.com/meh/paggio.git
+  revision: f9a178965dde6b65381e8cd140c66991d82b97c1
+  specs:
+    paggio (0.2.4)
+
+GIT
+  remote: git://github.com/opal/opal-browser.git
+  revision: a0b9bcc4aca8ec3d0a309df2d7e07805f8e74b36
+  specs:
+    opal-browser (0.2.0.beta1)
+      opal
+      paggio
+
+GIT
+  remote: git://github.com/opal/opal.git
+  revision: d0c745f02e6e8a734c0f4260e7be18deed7b1353
   specs:
     opal (0.7.0.dev)
       source_map
@@ -26,11 +35,6 @@ PATH
   specs:
     opal-overwolf (0.1.0)
       opal-browser
-
-PATH
-  remote: /home/meh/projects/ruby/paggio
-  specs:
-    paggio (0.2.4)
 
 GEM
   remote: http://rubygems.org/
