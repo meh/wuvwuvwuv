@@ -35,7 +35,7 @@ class Map
 		}
 
 		def name(common = nil, full = nil, aka = nil)
-			return @name unless common
+			return @alias || @full || @common unless common
 
 			@common = common
 			@full   = full
