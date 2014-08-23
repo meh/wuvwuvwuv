@@ -18,6 +18,8 @@ module Component
 	end
 
 	on :render do
+		element.add_class @name
+
 		epoch = Time.new.to_i
 
 		@map.each {|objective|
@@ -197,7 +199,7 @@ module Component
 					_.td.data(id: o.id) do
 						_.div.siege
 						_.div.tier
-						_.img(class: o.type).data(name: o.common)
+						_.img(class: o.type).data(name: o.name)
 					end
 				end
 			end
@@ -208,7 +210,7 @@ module Component
 						if o.ruin?
 							_.div o.location.upcase
 						else
-							_.div o.alias || o.full
+							_.div o.name
 						end
 					end
 				end
