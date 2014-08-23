@@ -91,7 +91,7 @@ module Component
 			if !objective.ruin?
 				tier.inner_text  = ''
 				siege.inner_text = ''
-				timer.inner_text = '4:a5'
+				timer.inner_text = '4:55'
 				timer.add_class :active
 			end
 		end
