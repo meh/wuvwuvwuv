@@ -35,13 +35,13 @@ class Updater
 
 						if remote.owner != local.owner
 							if local.owner != :neutral
-								local.capped(epoch)
+								local.capped = epoch
 							end
 
-							local.owner(remote.owner)
-							local.guild(nil)
-							local.tier(0)
-							local.refreshed(0)
+							local.owner     = remote.owner
+							local.guild     = nil
+							local.tier      = 0
+							local.refreshed = 0
 
 							local.save
 						end
