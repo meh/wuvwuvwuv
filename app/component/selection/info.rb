@@ -70,7 +70,7 @@ module Component
 
 			rule '.none' do
 				opacity 0
-				margin right: 1.ch
+				margin right: 1.5.ch
 			end
 
 			rule '& > div' do
