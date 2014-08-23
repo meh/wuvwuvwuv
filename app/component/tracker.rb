@@ -36,7 +36,7 @@ module Component
 				timer.inner_text = '%d:%02d' % [minutes, seconds]
 				timer.add_class :active
 
-				if minutes == 4 && seconds > 50
+				if minutes == 4 && seconds > 45
 					timer.add_class :highest
 				elsif minutes >= 3
 					timer.add_class :high
@@ -91,7 +91,7 @@ module Component
 			if !objective.ruin?
 				tier.inner_text  = ''
 				siege.inner_text = ''
-				timer.inner_text = '4:55'
+				timer.inner_text = '4:a5'
 				timer.add_class :active
 			end
 		end
@@ -114,9 +114,9 @@ module Component
 				e.inner_text = "%d:%02d" % [minutes, seconds - 1]
 			end
 			
-			if minutes == 5 && seconds == 0
+			if minutes == 4 && seconds == 55
 				e.add_class :highest
-			elsif minutes == 4 && seconds == 50
+			elsif minutes == 4 && seconds == 45
 				e.remove_class :highest
 				e.add_class :high
 			elsif minutes == 3 && seconds == 0
@@ -256,6 +256,47 @@ module Component
 			animation 'blink 1s linear infinite'
 		end
 
+		rule '&.blue', '&.green', '&.red' do
+			rule 'td:nth-child(13)' do
+				border right: [1.px, :solid, :black]
+				padding right: 2.px
+			end
+
+			rule 'td:nth-child(14)' do
+				padding left: 1.px
+			end
+		end
+
+		rule '&.eternal' do
+			# Jerrifer
+			rule 'td:nth-child(7)' do
+				border right: [1.px, :solid, :black]
+				padding right: 1.px
+			end
+
+			# Mendon
+			rule 'td:nth-child(8)' do
+				padding left: 2.px
+			end
+
+			# Veloka
+			rule 'td:nth-child(14)' do
+				border right: [1.px, :solid, :black]
+				padding right: 1.px
+			end
+
+			# Bravost
+			rule 'td:nth-child(15)' do
+				padding left: 1.px
+			end
+
+			# Langor
+			rule 'td:nth-child(21)' do
+				border right: [1.px, :solid, :black]
+				padding right: 2.px
+			end
+		end
+
 		rule 'table' do
 			border spacing: 0
 			display 'inline-block'
@@ -293,18 +334,6 @@ module Component
 
 						rule '.tier' do
 							right 9.px
-						end
-					end
-
-					# TODO: fix this
-					rule '&.separator' do
-						width! 0
-
-						border right: [1.px, :solid, :black]
-
-						rule '&.space' do
-							border :none
-							width 1.px
 						end
 					end
 
