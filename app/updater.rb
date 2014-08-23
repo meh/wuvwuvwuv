@@ -35,7 +35,7 @@ class Updater
 
 						if remote.owner != local.owner
 							if local.owner != :neutral
-								local.capped = epoch
+								local.capped = epoch - 5
 							end
 
 							local.owner     = remote.owner
