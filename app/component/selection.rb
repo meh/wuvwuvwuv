@@ -290,7 +290,7 @@ module Component
 					end
 	
 					rule '.info' do
-						margin left: 27.px
+						margin left: 7.px
 						padding top: 2.px
 					end
 	
