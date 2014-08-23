@@ -8,164 +8,150 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 #++
 
-require 'browser/http'
+require 'lissio/adapter/rest'
 require 'time'
 
-class Match
-	WORLDS = {
-		1008 => 'Jade Quarry',
-		2006 => 'Underworld',
-		1023 => "Devona's Rest",
-		2105 => 'Arborstone',
-		1014 => 'Crystal Desert',
-		1022 => 'Kaineng',
-		2001 => 'Fissure of Woe',
-		1001 => 'Anvil Rock',
-		2003 => 'Gandara',
-		1003 => "Yak's Bend",
-		2007 => 'Far Shiverpeaks',
-		1011 => 'Stormbluff Isle',
-		2013 => 'Aurora Glade',
-		1016 => 'Sea of Sorrows',
-		2005 => 'Ring of Fire',
-		2012 => 'Piken Square',
-		1012 => 'Darkhaven',
-		1005 => 'Maguuma',
-		2204 => "Abaddon's Mouth",
-		2203 => 'Elona Reach',
-		2010 => "Seafarer's Rest",
-		2104 => 'Vizunah Square',
-		2207 => 'Dzagonur',
-		2009 => 'Ruins of Surmia',
-		1002 => 'Borlis Pass',
-		2002 => 'Desolation',
-		1010 => 'Ehmry Bay',
-		1024 => 'Eredon Terrace',
-		1004 => 'Henge of Denravi',
-		1007 => 'Gate of Madness',
-		2205 => 'Drakkar Lake',
-		2008 => 'Whiteside Ridge',
-		1017 => 'Tarnished Coast',
-		2101 => 'Jade Sea',
-		1013 => 'Sanctum of Rall',
-		2014 => "Gunnar's Hold",
-		1021 => 'Dragonbrand',
-		2301 => 'Baruch Bay',
-		2102 => 'Fort Ranik',
-		2103 => 'Augury Rock',
-		2201 => 'Kodash',
-		2202 => 'Riverside',
-		2206 => "Miller's Sound",
-		1018 => 'Northern Shiverpeaks',
-		1015 => 'Isle of Janthir',
-		2004 => 'Blacktide',
-		1006 => "Sorrow's Furnace",
-		2011 => 'Vabbi',
-		1009 => 'Fort Aspenwood',
-		1020 => "Ferguson's Crossing",
-		1019 => 'Blackgate'
-	}
+class REST < Lissio::Adapter::REST
+	def initialize(model, point = nil, options = {}, &block)
+		super(model, options) {|_|
+			_.base 'http://api.guildwars2.com/v1'
+			_.endpoint point if point
 
-	def self.ranks(region)
-		Browser::HTTP.get("http://leaderboards.guildwars2.com/en/#{region}/wvw") {|req|
-			req.headers.clear
-		}.then {|res|
-			text = res.text.gsub('&#x27;', ?')
+			_.http do |req|
+				req.headers.clear
+			end
 
-			Hash[text.scan(%r{class=".*?rank number">[\s\S]*?>\s*(\d+)[\s\S]*?class="name text">\s*([\w' ]+)}m).map {|id, name|
-				[name.strip, id.to_i]
-			}]
+			if block.arity == 0
+				instance_exec(&block)
+			else
+				block.call(_)
+			end if block
 		}
 	end
+end
 
-	def self.find(world)
-		if world.is_a?(String)
-			world = WORLDS.key(world)
+class Match < Lissio::Model
+	class World < Struct.new(:id, :name, :region)
+		def initialize(id)
+			super(id, ::World.name(id), id.to_s[0] == ?1 ? :na : :eu)
 		end
-
-		Browser::HTTP.get('http://api.guildwars2.com/v1/wvw/matches.json') {|req|
-			req.headers.clear
-		}.then {|res|
-			match = res.json[:wvw_matches].find {|m|
-				m[:blue_world_id] == world or
-				m[:red_world_id] == world or
-				m[:green_world_id] == world
-			}
-
-			new(match)
-		}
 	end
 
-	attr_reader :id, :start, :end, :region
-	attr_reader :blue, :red, :green
+	property :id, primary: true, key: :wvw_match_id
 
-	def initialize(data)
-		@id     = data[:wvw_match_id]
-		@start  = Time.parse(data[:start_time])
-		@end    = Time.parse(data[:end_time])
-		@region = data[:red_world_id].to_s[0] == ?1 ? :na : :eu
+	property :blue,  as: World, key: :blue_world_id
+	property :green, as: World, key: :green_world_id
+	property :red,   as: World, key: :red_world_id
 
-		@blue  = World.new(data[:blue_world_id], WORLDS[data[:blue_world_id]])
-		@red   = World.new(data[:red_world_id], WORLDS[data[:red_world_id]])
-		@green = World.new(data[:green_world_id], WORLDS[data[:green_world_id]])
+	property :start, as: Time, key: :start_time
+	property :end,   as: Time, key: :end_time
+
+	def region
+		red.region
 	end
 
 	def details
-		Browser::HTTP.get("http://api.guildwars2.com/v1/wvw/match_details.json?match_id=#@id") {|req|
-			req.headers.clear
-		}.then {|res|
-			Details.new(self, res.json)
-		}
+		Details.fetch(id)
 	end
 
-	World = Struct.new(:id, :name)
+	class Details < Lissio::Model
+		class Scores < Lissio::Model
+			property :green, as: Integer
+			property :blue,  as: Integer
+			property :red,   as: Integer
 
-	class Details
-		attr_reader :scores, :red, :blue, :green, :eternal
-
-		def initialize(match, data)
-			@scores  = Scores.new(*data[:scores])
-			@red     = Map.new(data[:maps].find { |m| m[:type] == "RedHome" })
-			@blue    = Map.new(data[:maps].find { |m| m[:type] == "BlueHome" })
-			@green   = Map.new(data[:maps].find { |m| m[:type] == "GreenHome" })
-			@eternal = Map.new(data[:maps].find { |m| m[:type] == "Center" })
+			def initialize(red, blue, green)
+				super(red: red, blue: blue, green: green)
+			end
 		end
 
-		Scores = Struct.new(:red, :blue, :green)
+		class Guild < Lissio::Model
+			property :id, as: String, primary: true, key: :guild_id
+			property :name, key: :guild_name
+			property :tag
 
-		class Map
-			Objective = Struct.new(:id, :owner, :guild)
-			Bonus     = Struct.new(:type, :owner)
+			adapter REST, fetch: -> id { "/guild_details.json?guild_id=#{id}" }
+		end
 
-			attr_reader :scores, :bonuses
-
-			def initialize(data)
-				@scores = Scores.new(*data[:scores])
-
-				@bonuses = data[:bonuses].map {|b|
-					Bonus.new(b[:type], b[:owner].downcase)
-				}
-
-				@hash = Hash[data[:objectives].map {|o|
-					[o[:id], Objective.new(o[:id], o[:owner].downcase, o[:owner_guild])]
-				}]
+		class Map < Lissio::Model
+			class Objective < Lissio::Model
+				property :id, as: Integer
+				property :owner, as: :downcase.to_proc
+				property :guild, as: Guild, key: :owner_guild
 			end
 
-			def [](id)
-				@hash[id]
+			class Bonus < Lissio::Model
+				property :type
+				property :owner, as: :downcase.to_proc
 			end
+
+			property :name, key: :type, as: -> type {
+				case type
+				when 'RedHome'   then :red
+				when 'BlueHome'  then :blue
+				when 'GreenHome' then :green
+				when 'Center'    then :eternal
+				end
+			}
+
+			property :scores, as: Scores
+			property :bonuses, as: [Bonus]
+			property :objectives, as: [Objective]
 
 			include Enumerable
-
+			
 			def each(&block)
 				return enum_for :each unless block
 
-				@hash.each {|_, objective|
-					block.call(objective)
-				}
+				objectives.each(&block)
 
 				self
 			end
 		end
+
+		property :scores, as: Scores
+
+		property :green,   as: Map
+		property :blue,    as: Map
+		property :red,     as: Map
+		property :eternal, as: Map
+
+		adapter REST do |_|
+			_.endpoint fetch: -> id {
+				"/wvw/match_details.json?match_id=#{id}"
+			}
+
+			_.parse do |data|
+				new scores:  data[:scores],
+				    red:     data[:maps].find { |m| m[:type] == "RedHome" },
+				    blue:    data[:maps].find { |m| m[:type] == "BlueHome" },
+				    green:   data[:maps].find { |m| m[:type] == "GreenHome" },
+				    eternal: data[:maps].find { |m| m[:type] == "Center" }
+			end
+		end
+	end
+end
+
+class Matches < Lissio::Collection
+	model Match
+
+	adapter REST, '/wvw/matches.json' do |_|
+		_.parse do |data|
+			new data[:wvw_matches]
+		end
+	end
+
+	def self.find(world)
+		if world.is_a? String
+			world = World.id(world)
+		end
+
+		Matches.fetch.then {|matches|
+			matches.find {|match|
+				match.blue.id  == world or
+				match.green.id == world or
+				match.red.id   == world
+			}
+		}
 	end
 end

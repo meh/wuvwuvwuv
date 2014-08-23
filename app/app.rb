@@ -18,7 +18,10 @@ require 'browser/delay'
 require 'browser/interval'
 require 'browser/console'
 
+require 'world'
 require 'match'
+require 'map'
+require 'updater'
 
 require 'component/selection'
 require 'component/help'
@@ -34,6 +37,8 @@ class Application < Lissio::Application
 		route '/select' do
 			load Component::Selection.new
 			resize!
+
+			updater
 		end
 
 		route '/help' do
@@ -47,50 +52,8 @@ class Application < Lissio::Application
 		end
 
 		route '/tracker' do
-			load Component::Tracker.const_get(map.capitalize).new
+			load Component::Tracker.new(map)
 			move!
-
-			@self.start(storage(:timers).to_h, storage(:tiers).to_h)
-
-			Match.find(world).then {|m|
-				updater = -> {
-					m.details.then {|d|
-						epoch = Time.now.to_i
-
-						[d.red, d.blue, d.green, d.eternal].each {|w|
-							w.each {|o|
-								id = o.id.to_s
-
-								if storage(:timers).has_key? id
-									owner, _ = storage(:timers)[id]
-
-									if owner != o.owner
-										storage(:timers)[id] = [o.owner, epoch]
-										storage(:tiers).delete(id)
-										storage(:sieges).delete(id)
-									end
-								else
-									storage(:timers)[id] = [o.owner, 0]
-								end
-							}
-						}
-
-						@self.update(d)
-					}.always {
-						updater.after(interval)
-					}
-				}
-
-				updater.()
-			}
-
-			every 1 do
-				@self.timers
-			end
-
-			every 60 do
-				@self.sieges
-			end
 		end
 	end
 
@@ -134,27 +97,26 @@ class Application < Lissio::Application
 	end
 
 	def load(component)
-		@self = component
 		element.at_css('#container').inner_dom = component.render
 	end
 
-	def storage(part)
-		$window.storage(part)
+	def updater
+		@updater ||= Updater.new(world, interval)
 	end
-	expose :storage
+
+	def state
+		$window.storage(:state)
+	end
 
 	def world
-		storage(:state)[:world] rescue nil
+		state[:world] rescue nil
 	end
 	expose :world
 
 	def world=(value)
-		if storage(:state)[:world] != value
-			storage(:state)[:world] = value
-
-			storage(:timers).clear
-			storage(:tiers).clear
-			storage(:sieges).clear
+		if state[:world] != value
+			state[:world] = value
+			updater.world = value
 		end
 
 		value
@@ -162,22 +124,22 @@ class Application < Lissio::Application
 	expose :world=
 
 	def map
-		storage(:state)[:map] rescue nil
+		state[:map] rescue nil
 	end
 	expose :map
 
 	def map=(value)
-		storage(:state)[:map] = value
+		state[:map] = value
 	end
 	expose :map=
 
 	def size
-		storage(:state)[:size] || :small
+		state[:size] || :small
 	end
 	expose :size
 
 	def size=(value)
-		storage(:state)[:size] = value
+		state[:size] = value
 		element.remove_class(:small, :normal, :large, :larger)
 		element.add_class(value)
 
@@ -186,12 +148,13 @@ class Application < Lissio::Application
 	expose :size=
 
 	def interval
-		storage(:state)[:interval] || 2
+		state[:interval] || 2
 	end
 	expose :interval
 
 	def interval=(value)
-		storage(:state)[:interval] = value
+		state[:interval] = value
+		updater.interval = value
 	end
 	expose :interval=
 
@@ -245,7 +208,7 @@ class Application < Lissio::Application
 			height: 100%;
 
 			overflow: hidden;
-			user-select: none;
+			-webkit-user-select: none;
 		}
 
 		@-webkit-keyframes blink {

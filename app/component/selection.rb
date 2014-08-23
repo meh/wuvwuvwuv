@@ -74,24 +74,27 @@ module Component
 		def update
 			id = Application.world
 	
-			element.at_css('.world .name').inner_text = Match::WORLDS[id]
+			element.at_css('.world .name').inner_text = World.name(id)
 	
-			Match.find(id).then {|m|
+			Matches.find(id).then {|m|
 				element.at_css('.match .green .name').inner_text = m.green.name
 				element.at_css('.match .red .name').inner_text = m.red.name
 				element.at_css('.match .blue .name').inner_text = m.blue.name
-	
-				Match.ranks(m.region).then {|ranks|
+
+				World.ranks(m.region).then {|ranks|
 					element.at_css('.match .green .rank').inner_text = rank_for(ranks[m.green.name])
 					element.at_css('.match .red .rank').inner_text = rank_for(ranks[m.red.name])
 					element.at_css('.match .blue .rank').inner_text = rank_for(ranks[m.blue.name])
 				}
 	
 				m.details.then {|d|
-					element.at_css('.match .green .info').inner_dom = Info.new(d.green).render
-					element.at_css('.match .red .info').inner_dom = Info.new(d.red).render
-					element.at_css('.match .blue .info').inner_dom = Info.new(d.blue).render
-					element.at_css('.match .eternal .info').inner_dom = Info.new(d.eternal).render
+					element.at_css('.match .green .info').inner_dom = Info.new(d.green!).render
+					element.at_css('.match .red .info').inner_dom = Info.new(d.red!).render
+					element.at_css('.match .blue .info').inner_dom = Info.new(d.blue!).render
+					element.at_css('.match .eternal .info').inner_dom = Info.new(d.eternal!).render
+				}.rescue {|e|
+					$console.log "scores"
+					$console.log e.inspect
 				}
 			}
 		end
@@ -129,7 +132,7 @@ module Component
 	
 					select do
 						optgroup(label: 'North America') do
-							Match::WORLDS.to_a.select {|id, name|
+							World::HASH.to_a.select {|id, name|
 								id.to_s[0] == ?1
 							}.sort_by {|_, name|
 								name
@@ -141,7 +144,7 @@ module Component
 						end
 	
 						optgroup(label: 'Europe') do
-							Match::WORLDS.to_a.select {|id, name|
+							World::HASH.to_a.select {|id, name|
 								id.to_s[0] == ?2
 							}.sort_by {|_, name|
 								name
