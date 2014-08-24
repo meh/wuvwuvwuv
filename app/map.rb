@@ -130,6 +130,21 @@ class Map
 	def [](id)
 		@objectives.find { |o| o.id == id.to_i }
 	end
+
+	def save
+		@objectives.each(&:save)
+	end
+
+	def reload
+		@objectives.each(&:reload)
+	end
+
+	def clear
+		@objectives.each {|objective|
+			objective.clear
+			objective.save
+		}
+	end
 end
 
 require 'map/green'
