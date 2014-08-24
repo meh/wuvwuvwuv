@@ -202,21 +202,29 @@ class Application < Lissio::Application
 		div.container! 'Loading...'
 	end
 
-	css! <<-CSS
-		html, body {
-			width: 100%;
-			height: 100%;
+	css! do
+		rule 'html', 'body' do
+			width 100.%
+			height 100.%
 
-			overflow: hidden;
-			-webkit-user-select: none;
-		}
+			overflow :hidden
+			user_select :none
+		end
 
-		@-webkit-keyframes blink {
-			0% { opacity: 1.0; }
-			50% { opacity: 0.0; }
-			100% { opacity: 1.0; }
-		}
-	CSS
+		animation :blink do
+			step 0.% do
+				opacity 1
+			end
+
+			step 50.% do
+				opacity 0
+			end
+
+			step 100.% do
+				opacity 1
+			end
+		end
+	end
 
 	css do
 		font family: 'Text',
