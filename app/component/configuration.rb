@@ -22,7 +22,7 @@ module Component
 			Application.size     = element.at_css('.size td:nth-child(2) select').value
 			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
 
-			Application.navigate '/select'
+			Application.navigate :back
 		end
 
 		on :change, '.size td:nth-child(2) select' do

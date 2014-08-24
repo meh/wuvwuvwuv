@@ -64,7 +64,7 @@ module Component
 		end
 	
 		on :click, '.fa-arrow-circle-left' do
-			Application.navigate '/select'
+			Application.navigate :back
 		end
 
 		tag class: :help
