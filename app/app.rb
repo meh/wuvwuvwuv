@@ -134,7 +134,7 @@ class Application < Lissio::Application
 	expose :map=
 
 	def size
-		state[:size] || :small
+		state[:size] || :normal
 	end
 	expose :size
 
