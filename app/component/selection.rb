@@ -131,27 +131,23 @@ module Component
 					div.style(clear: :both)
 	
 					select do
-						optgroup(label: 'North America') do
+						optgroup.label('North America') do
 							World::HASH.to_a.select {|id, name|
 								id.to_s[0] == ?1
 							}.sort_by {|_, name|
 								name
 							}.each {|id, name|
-								option(value: id) do
-									name
-								end
+								option.value(id) >> name
 							}
 						end
 	
-						optgroup(label: 'Europe') do
+						optgroup.label('Europe') do
 							World::HASH.to_a.select {|id, name|
 								id.to_s[0] == ?2
 							}.sort_by {|_, name|
 								name
 							}.each {|id, name|
-								option(value: id) do
-									name
-								end
+								option.value(id) >> name
 							}
 						end
 					end
