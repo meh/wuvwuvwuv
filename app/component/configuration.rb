@@ -64,10 +64,10 @@ module Component
 							div.value 'Normal'
 
 							select do
-								option(value: :small) { 'Small' }
-								option(value: :normal) { 'Normal' }
-								option(value: :large) { 'Large' }
-								option(value: :larger) { 'Larger' }
+								option.value(:small)  >> 'Small'
+								option.value(:normal) >> 'Normal'
+								option.value(:large)  >> 'Large'
+								option.value(:larger) >> 'Larger'
 							end
 						end
 					end
