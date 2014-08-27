@@ -107,6 +107,7 @@ class Application < Lissio::Application
 	def state
 		$window.storage(:state)
 	end
+	expose :state
 
 	def world
 		state[:world] rescue nil
