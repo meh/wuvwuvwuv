@@ -207,8 +207,8 @@ module Component
 				_.tr.name do
 					@map.each do |o|
 						_.td.data(id: o.id) do
-							if o.ruin?
-								_.div o.location.upcase
+							if o.ruin? || Application.state["cardinal.#{o.type}"]
+								_.div.cardinal o.location.upcase
 							else
 								_.div o.name
 							end
