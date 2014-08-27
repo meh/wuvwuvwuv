@@ -229,29 +229,29 @@ module Component
 
 			rule '.highest' do
 				text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
-					           (', 0 0 1px #b20000' * 10)
+				             (', 0 0 1px #b20000' * 10)
 
 				animation 'blink 1s linear infinite'
 			end
 
 			rule '.high' do
 				text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
-					           (', 0 0 1px #b20000' * 10)
+				             (', 0 0 1px #b20000' * 10)
 			end
 
 			rule '.medium' do
 				text shadow: (', 0 0 2px #ff6000' * 10)[1 .. -1] +
-					           (', 0 0 1px #ff6000' * 10)
+				             (', 0 0 1px #ff6000' * 10)
 			end
 
 			rule '.low' do
 				text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
-					           (', 0 0 1px #007a20' * 10)
+				             (', 0 0 1px #007a20' * 10)
 			end
 
 			rule '.lowest' do
 				text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
-					           (', 0 0 1px #007a20' * 10)
+				             (', 0 0 1px #007a20' * 10)
 
 				animation 'blink 1s linear infinite'
 			end
