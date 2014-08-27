@@ -22,6 +22,13 @@ module Component
 			Application.size     = element.at_css('.size td:nth-child(2) select').value
 			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
 
+			element.css('.cardinal span').each {|el|
+				type   = el.class_names - [:active]
+				active = el.class_names.include? :active
+
+				Application.state["cardinal.#{type}"] = active
+			}
+
 			Application.navigate :back
 		end
 
@@ -29,9 +36,25 @@ module Component
 			update
 		end
 
+		on :click, '.cardinal span' do |e|
+			if e.on.class_names.include? :active
+				e.on.remove_class :active
+			else
+				e.on.add_class :active
+			end
+		end
+
 		on :render do
 			element.at_css(".size td:nth-child(2) select option[value='#{Application.size}']")[:selected] = :selected
 			element.at_css('.interval td:nth-child(2) input').value = Application.interval
+
+			element.css('.cardinal span').each {|el|
+				type = el.class_names - [:active]
+
+				if Application.state["cardinal.#{type}"]
+					el.add_class :active
+				end
+			}
 
 			update
 		end
@@ -77,6 +100,15 @@ module Component
 						td do
 							input.type(:text).max(1)
 							span ' seconds'
+						end
+					end
+
+					tr.cardinal do
+						td 'Cardinal :'
+						td do
+							span.keep  'Keep'
+							span.tower 'Tower'
+							span.camp  'Camp'
 						end
 					end
 				end
@@ -126,33 +158,46 @@ module Component
 				end
 
 				rule 'table' do
-					rule 'td' do
-						position :relative
-						white space: :nowrap
+					rule 'tr' do
+						rule 'td' do
+							position :relative
+							white space: :nowrap
 
-						rule '&:first-child' do
-							padding right: 7.px
+							rule '&:first-child' do
+								padding right: 7.px
+							end
+
+							rule 'select' do
+								position :absolute
+								top 0
+								left 0
+								opacity 0
+							end
+
+							rule 'input' do
+								background :transparent
+								border 0
+								display 'inline-block'
+								width 1.ch
+
+								color :white
+								text shadow: (', 0 0 2px black' * 10)[1 .. -1] +
+							             	 (', 0 0 1px black' * 10)
+
+								rule '&:focus' do
+									outline :none
+								end
+							end
 						end
 
-						rule 'select' do
-							position :absolute
-							top 0
-							left 0
-							opacity 0
-						end
+						rule '&.cardinal' do
+							rule 'span' do
+								padding right: 1.ch
 
-						rule 'input' do
-							background :transparent
-							border 0
-							display 'inline-block'
-							width 1.ch
-
-							color :white
-							text shadow: (', 0 0 2px black' * 10)[1 .. -1] +
-							             (', 0 0 1px black' * 10)
-
-							rule '&:focus' do
-								outline :none
+								rule '&.active' do
+									text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
+									             (', 0 0 1px #007a20' * 10)
+								end
 							end
 						end
 					end
