@@ -20,6 +20,7 @@ module Component
 	
 		on :click, '.fa-arrow-circle-left' do
 			Application.size     = element.at_css('.size td:nth-child(2) select').value
+			Application.show     = element.at_css('.show span').inner_text == 'Yes'
 			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
 
 			element.css('.cardinal span').each {|el|
@@ -36,6 +37,14 @@ module Component
 			update
 		end
 
+		on :click, '.show span' do |e|
+			if e.on.inner_text == 'Yes'
+				e.on.inner_text = 'No'
+			else
+				e.on.inner_text = 'Yes'
+			end
+		end
+
 		on :click, '.cardinal span' do |e|
 			if e.on.class_names.include? :active
 				e.on.remove_class :active
@@ -46,6 +55,7 @@ module Component
 
 		on :render do
 			element.at_css(".size td:nth-child(2) select option[value='#{Application.size}']")[:selected] = :selected
+			element.at_css('.show span').inner_text = Application.show? ? 'Yes' : 'No'
 			element.at_css('.interval td:nth-child(2) input').value = Application.interval
 
 			element.css('.cardinal span').each {|el|
@@ -92,6 +102,13 @@ module Component
 								option.value(:large)  >> 'Large'
 								option.value(:larger) >> 'Larger'
 							end
+						end
+					end
+
+					tr.show do
+						td 'In-Game Only :'
+						td do
+							span
 						end
 					end
 

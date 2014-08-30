@@ -61,6 +61,20 @@ class Application < Lissio::Application
 		super
 
 		if Overwolf.available?
+			Overwolf::Game.on :change do |u|
+				if u.focus?
+					next unless u.game.title == "Guild Wars 2"
+
+					Overwolf::Window.current.then {|w|
+						if u.game.focus?
+							w.restore
+						else
+							w.minimize
+						end
+					}
+				end
+			end
+
 			Overwolf::Window.current.then {|w|
 				if w.id.end_with?("TrackerWindow") || w.id.end_with?("TrackerClickableWindow")
 					w.resize($window.screen.width, 300)
@@ -108,6 +122,16 @@ class Application < Lissio::Application
 		$window.storage(:state)
 	end
 	expose :state
+
+	def show?
+		state[:show]
+	end
+	expose :show
+
+	def show=(value)
+		state[:show] = value
+	end
+	expose :show=
 
 	def world
 		state[:world] rescue nil
