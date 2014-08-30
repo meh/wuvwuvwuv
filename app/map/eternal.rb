@@ -14,7 +14,7 @@ class Map
 			id 11
 			name 'Tower', "Aldon's Ledge", 'Aldon'
 			type :tower
-			location :w
+			location :ww
 		end
 
 		objective do
@@ -56,14 +56,14 @@ class Map
 			id 13
 			name 'Tower', "Jerrifer's Slough", 'Jerrifer'
 			type :tower
-			location :sw
+			location :ssw
 		end
 
 		objective do
 			id 17
 			name 'Tower', "Mendon's Gap", 'Mendon'
 			type :tower
-			location :nw
+			location :nnw
 		end
 
 		objective do
@@ -105,14 +105,14 @@ class Map
 			id 20
 			name 'Tower', 'Veloka Slope', 'Veloka'
 			type :tower
-			location :ne
+			location :nne
 		end
 
 		objective do
 			id 22
 			name 'Tower', 'Bravost Escarpment', 'Bravost'
 			type :tower
-			location :e
+			location :ee
 		end
 
 		objective do
@@ -154,7 +154,7 @@ class Map
 			id 15
 			name 'Tower', 'Langor Gulch', 'Langor'
 			type :tower
-			location :se
+			location :sse
 		end
 
 		objective do
