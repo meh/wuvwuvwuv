@@ -116,6 +116,10 @@ class Match < Lissio::Model
 		property :red,     as: Map
 		property :eternal, as: Map
 
+		def maps
+			[green!, blue!, red!, eternal!]
+		end
+
 		adapter REST do |_|
 			_.endpoint fetch: -> id {
 				"/wvw/match_details.json?match_id=#{id}"
