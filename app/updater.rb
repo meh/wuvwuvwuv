@@ -12,29 +12,23 @@ class Updater
 	attr_reader   :world
 	attr_accessor :interval
 
-	def initialize(world, interval)
-		@world    = world
-		@interval = interval
-		@maps     = [Map::Green.new, Map::Blue.new, Map::Red.new, Map::Eternal.new]
-
+	def initialize
+		@maps  = Map.all
 		@block = -> {
-			unless @world
-				next @block.after(@interval)
-			end
+			next @block.after(Application.interval) unless Application.world
 
 			epoch = Time.now.to_i
 
-			Matches.find(@world).then {|match|
-				if @id.nil?
-					@id = match.id
-				elsif @id != match.id
-					@id = match.id
+			Matches.find(Application.world).then {|match|
+				if Application.match != match.hash
+					Application.match = match.hash
+
 					@maps.each(&:clear)
 				end
 
 				match.details
 			}.then {|details|
-				[details.green!, details.blue!, details.red!, details.eternal!].each {|d|
+				details.maps.each {|d|
 					map = @maps.find { |m| m.name == d.name }
 
 					d.objectives.each {|remote|
@@ -56,17 +50,10 @@ class Updater
 					}
 				}
 			}.always {|e|
-				@block.after(@interval)
+				@block.after(Application.interval)
 			}
 		}
 
 		@block.call
-	end
-
-	def world=(value)
-		return unless value != @world
-
-		@world = value
-		@maps.each(&:clear)
 	end
 end

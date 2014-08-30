@@ -50,6 +50,10 @@ class Match < Lissio::Model
 		red.region
 	end
 
+	def hash
+		"#@id:#{blue.id}-#{green.id}-#{red.id}"
+	end
+
 	def details
 		Details.fetch(id)
 	end

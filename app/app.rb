@@ -117,7 +117,6 @@ class Application < Lissio::Application
 	def world=(value)
 		if state[:world] != value
 			state[:world] = value
-			updater.world = value
 		end
 
 		value
@@ -133,6 +132,16 @@ class Application < Lissio::Application
 		state[:map] = value
 	end
 	expose :map=
+
+	def match
+		state[:match]
+	end
+	expose :match
+
+	def match=(value)
+		state[:match] = value
+	end
+	expose :match=
 
 	def size
 		state[:size] || :normal

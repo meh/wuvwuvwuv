@@ -9,6 +9,14 @@
 #++
 
 class Map
+	def self.all
+		(@list || []).map(&:new)
+	end
+
+	def self.inherited(klass)
+		(@list ||= []) << klass
+	end
+
 	class Objective < Browser::Storage
 		attr_reader :full, :common, :alias
 
