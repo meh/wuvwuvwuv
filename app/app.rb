@@ -22,7 +22,9 @@ require 'world'
 require 'match'
 require 'map'
 require 'updater'
+require 'mumble'
 
+require 'component/mumble'
 require 'component/selection'
 require 'component/help'
 require 'component/configuration'
@@ -53,6 +55,8 @@ class Application < Lissio::Application
 			load Component::Tracker.new(map)
 			move!
 		end
+
+		@mumble = Component::Mumble.new
 	end
 
 	def start
@@ -60,8 +64,6 @@ class Application < Lissio::Application
 
 		if Overwolf.available?
 			Overwolf::Game.on :change do |u|
-				next unless show?
-
 				if u.focus?
 					next unless u.game.title == "Guild Wars 2"
 
@@ -69,7 +71,7 @@ class Application < Lissio::Application
 						if u.game.focus?
 							w.restore
 						else
-							w.minimize
+							w.minimize unless show?
 						end
 					}
 				end
@@ -143,6 +145,16 @@ class Application < Lissio::Application
 	def updater
 		@updater ||= Updater.new(world, interval)
 	end
+
+	def mumble?
+		@mumble.available?
+	end
+	expose :mumble?
+
+	def mumble
+		@mumble.new
+	end
+	expose :mumble
 
 	def state
 		$window.storage(:state)
@@ -303,8 +315,9 @@ class Application < Lissio::Application
 		element.add_class(size)
 	end
 
-	html do
-		div.container! 'Loading...'
+	html do |_|
+		_ << @mumble
+		_.div.container! 'Loading...'
 	end
 
 	css! do

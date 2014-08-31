@@ -13,9 +13,38 @@ class Updater
 	attr_accessor :interval
 
 	def initialize
-		@maps  = Map.all
-		@block = -> {
-			next @block.after(Application.interval) unless Application.world
+		@maps   = Map.all
+		@mumble = nil
+
+		start
+	end
+
+	def tracker
+		@tracker ||= -> {
+			next @tracker.after(1) unless Application.mumble?
+
+			mumble = Application.mumble
+
+			if @mumble && @mumble.identity[:map_id] == mumble.identity[:map_id]
+				next @tracker.after(1)
+			end
+
+			Application.map = case mumble.identity[:map_id]
+			                  when 38 then :eternal
+			                  when 94 then :red
+			                  when 95 then :green
+			                  when 96 then :blue
+			                  else         nil
+			                  end
+
+			@mumble = mumble
+			@tracker.after(1)
+		}
+	end
+
+	def match
+		@match ||= -> {
+			next @match.after(Application.interval) unless Application.world
 
 			epoch = Time.now.to_i
 
@@ -50,10 +79,13 @@ class Updater
 					}
 				}
 			}.always {|e|
-				@block.after(Application.interval)
+				@match.after(Application.interval)
 			}
 		}
+	end
 
-		@block.call
+	def start
+		tracker.after(1)
+		match.after(Application.interval)
 	end
 end
