@@ -62,6 +62,8 @@ class Application < Lissio::Application
 
 		if Overwolf.available?
 			Overwolf::Game.on :change do |u|
+				next unless show?
+
 				if u.focus?
 					next unless u.game.title == "Guild Wars 2"
 
@@ -126,7 +128,7 @@ class Application < Lissio::Application
 	def show?
 		state[:show]
 	end
-	expose :show
+	expose :show?
 
 	def show=(value)
 		state[:show] = value
