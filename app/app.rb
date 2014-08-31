@@ -37,8 +37,6 @@ class Application < Lissio::Application
 		route '/select' do
 			load Component::Selection.new
 			resize!
-
-			updater
 		end
 
 		route '/help' do
@@ -105,15 +103,41 @@ class Application < Lissio::Application
 					end
 
 					@router.navigate '/tracker'
+					setup(:tracker)
 				else
 					@router.navigate '/select'
+					setup(:selection)
 				end
 			}
+		else
+			if @router.path == '/select'
+				setup(:selection)
+			elsif @router.path == '/tracker'
+				setup(:tracker)
+			end
 		end
 	end
 
+	def setup(what)
+		if what == :selection
+			state.delete(:map)
+			state.delete(:explicit)
+
+			updater
+		elsif what == :tracker
+			$window.on :storage do |e|
+				refresh if e.key == :reload
+			end
+		end
+	end
+
+	def reload
+		$window.storage(:reload)[:value] = !$window.storage(:reload)[:value]
+	end
+	expose :reload
+
 	def load(component)
-		element.at_css('#container').inner_dom = component.render
+		element.at_css('#container').inner_dom = (@component = component).render
 	end
 
 	def updater
@@ -136,13 +160,14 @@ class Application < Lissio::Application
 	expose :show=
 
 	def world
-		state[:world] rescue nil
+		state[:world]
 	end
 	expose :world
 
 	def world=(value)
 		if state[:world] != value
 			state[:world] = value
+			reload
 		end
 
 		value
@@ -150,12 +175,56 @@ class Application < Lissio::Application
 	expose :world=
 
 	def map
-		state[:map] rescue nil
+		state[:map]
 	end
 	expose :map
 
+	def map!(value)
+		state[:map]      = value
+		state[:explicit] = true
+
+		if Overwolf.available?
+			Promise.when(Overwolf::Window.open('TrackerWindow'),
+			             Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
+				window = c.closed? ? u : c
+
+				if window.closed?
+					w.restore
+				else
+					reload
+				end
+			}
+		else
+			reload
+		end
+
+		@component.trigger :map, value if @component
+	end
+	expose :map!
+
 	def map=(value)
+		next if state[:explicit]
+
 		state[:map] = value
+
+		if Overwolf.available?
+			Promise.when(Overwolf::Window.open('TrackerWindow'),
+			             Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
+				window = c.closed? ? u : c
+
+				if value.nil?
+					window.close
+				elsif window.closed?
+					window.restore
+				else
+					reload
+				end
+			}
+		else
+			reload
+		end
+
+		@component.trigger :map, value if @component
 	end
 	expose :map=
 

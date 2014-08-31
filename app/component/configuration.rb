@@ -20,7 +20,7 @@ module Component
 	
 		on :click, '.fa-arrow-circle-left' do
 			Application.size     = element.at_css('.size td:nth-child(2) select').value
-			Application.show     = element.at_css('.show span').inner_text == 'Yes'
+			Application.show     = element.at_css('.show span').inner_text == 'No'
 			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
 
 			element.css('.cardinal span').each {|el|
@@ -31,6 +31,7 @@ module Component
 			}
 
 			Application.navigate :back
+			Application.reload
 		end
 
 		on :change, '.size td:nth-child(2) select' do
@@ -55,7 +56,7 @@ module Component
 
 		on :render do
 			element.at_css(".size td:nth-child(2) select option[value='#{Application.size}']")[:selected] = :selected
-			element.at_css('.show span').inner_text = Application.show? ? 'Yes' : 'No'
+			element.at_css('.show span').inner_text = Application.show? ? 'No' : 'Yes'
 			element.at_css('.interval td:nth-child(2) input').value = Application.interval
 
 			element.css('.cardinal span').each {|el|

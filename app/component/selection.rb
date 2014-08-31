@@ -37,27 +37,8 @@ module Component
 		on :click, '.match img' do |e|
 			next unless Application.world
 	
-			Application.map = e.on.parent.class_name
-	
-			if Overwolf.available?
-				Promise.when(Overwolf::Window.open('TrackerWindow'),
-					           Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
-					name   = c.visible? ? 'TrackerClickableWindow' : 'TrackerWindow'
-					window = c.visible? ? c : u
-	
-					if window.visible?
-						window.close
-	
-						Overwolf::Window.open(name).then {|w|
-							w.restore
-						}
-					else
-						window.restore
-					end
-				}
-			end
+			Application.map! e.on.parent.class_name
 		end
-	
 
 		def rank_for(n)
 			if n == 1
@@ -92,9 +73,6 @@ module Component
 					element.at_css('.match .red .info').inner_dom = Info.new(d.red!).render
 					element.at_css('.match .blue .info').inner_dom = Info.new(d.blue!).render
 					element.at_css('.match .eternal .info').inner_dom = Info.new(d.eternal!).render
-				}.rescue {|e|
-					$console.log "scores"
-					$console.log e.inspect
 				}
 			}
 		end
@@ -102,6 +80,10 @@ module Component
 		on :render do
 			if Application.world
 				update
+			end
+
+			if map = Application.map
+				element.at_css(".match .#{map} img").add_class :active
 			end
 	
 			every 60 do
@@ -112,6 +94,14 @@ module Component
 		on :change, 'select' do |e|
 			Application.world = e.on.value.to_i
 			update
+		end
+
+		on :map do |e, map|
+			element.css('.match img').remove_class(:active)
+
+			if map
+				element.at_css(".match .#{map} img").add_class :active
+			end
 		end
 
 		tag class: :selection
@@ -264,6 +254,12 @@ module Component
 						vertical align: :middle
 						cursor :pointer
 						margin right: 4.px
+
+						opacity 0.8
+
+						rule '&.active' do
+							opacity 1
+						end
 					end
 	
 					rule '.name' do
