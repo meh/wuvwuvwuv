@@ -17,6 +17,7 @@
 
 	"data": {
 		"start_window": "MainWindow",
+
 		"windows": {
 			"MainWindow": {
 				"file": "index.html",
@@ -50,14 +51,15 @@
 					"height": 1
 				}
 			}
-
 		},
+
 		"hotkeys": {
 			"toggle": {
 				"title": "Toggle Tracker",
 				"action-type": "custom",
 				"default": "Apps"
 			},
+
 			"clickthrough": {
 				"title": "Toggle Tracker Click-Through",
 				"action-type": "custom",
@@ -70,6 +72,10 @@
 				"http://*.guildwars2.com",
 				"https://*.guildwars2.com"
 			]
-		}
+		},
+
+		"plugins": [
+			"npMumbleLink.dll"
+		]
 	}
 }
