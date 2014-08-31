@@ -63,15 +63,20 @@ class Application < Lissio::Application
 		super
 
 		if Overwolf.available?
+			visible = {}
+
 			Overwolf::Game.on :change do |u|
+				next if show?
+
 				if u.focus?
 					next unless u.game.title == "Guild Wars 2"
 
 					Overwolf::Window.current.then {|w|
 						if u.game.focus?
-							w.restore
+							w.restore if visible.delete(w.id)
 						else
-							w.minimize unless show?
+							visible[w.id] = w.visible?
+							w.minimize
 						end
 					}
 				end
