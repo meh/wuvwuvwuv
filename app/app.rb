@@ -63,8 +63,6 @@ class Application < Lissio::Application
 		super
 
 		if Overwolf.available?
-			visible = {}
-
 			Overwolf::Game.on :change do |u|
 				next if show?
 
@@ -73,10 +71,10 @@ class Application < Lissio::Application
 
 					Overwolf::Window.current.then {|w|
 						if u.game.focus?
-							w.restore if visible.delete(w.id)
+							w.restore if @visible
 						else
-							visible[w.id] = w.visible?
 							w.minimize
+							@visible = w.visible?
 						end
 					}
 				end
