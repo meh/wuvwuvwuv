@@ -206,7 +206,7 @@ class Application < Lissio::Application
 				window = c.closed? ? u : c
 
 				if window.closed?
-					w.restore
+					window.restore
 				else
 					reload
 				end
