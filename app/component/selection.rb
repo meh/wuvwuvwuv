@@ -78,7 +78,9 @@ module Component
 		end
 
 		on :change, 'select' do |e|
-			Application.world = e.on.value.to_i
+			Application.state[:world] = e.on.value.to_i
+			Application.reload
+
 			update
 		end
 
