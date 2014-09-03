@@ -30,11 +30,11 @@ class Updater
 			end
 
 			Application.map = case mumble.identity[:map_id]
-			                  when 38 then :eternal
-			                  when 94 then :red
-			                  when 95 then :green
-			                  when 96 then :blue
-			                  else         nil
+			                  when Map::Eternal.id then :eternal
+			                  when Map::Red.id     then :red
+			                  when Map::Green.id   then :green
+			                  when Map::Blue.id    then :blue
+			                  else                      nil
 			                  end
 
 			@mumble = mumble
@@ -64,13 +64,30 @@ class Updater
 						local = map[remote.id]
 						local.reload
 
+						unless local.guild.nil? && remote.guild!.nil?
+							if remote.guild!.nil?
+								local.guild = nil
+							elsif local.guild.nil?
+								remote.guild.then {|guild|
+									local.reload
+									local.guild = guild
+									local.save
+								}
+							elsif local.guild.id != remote.guild!
+								remote.guild.then {|guild|
+									local.reload
+									local.guild = guild
+									local.save
+								}
+							end
+						end
+
 						if remote.owner != local.owner
 							if local.owner != :neutral
 								local.capped = epoch - 5
 							end
 
 							local.owner     = remote.owner
-							local.guild     = nil
 							local.tier      = 0
 							local.refreshed = 0
 
