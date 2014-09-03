@@ -169,25 +169,20 @@ class Application < Lissio::Application
 	end
 	expose :show?
 
-	def show=(value)
-		state[:show] = value
+	def no_guilds?
+		state[:no_guilds]
 	end
-	expose :show=
+	expose :no_guilds?
+
+	def cardinal?(type)
+		state["cardinal.#{type}"]
+	end
+	expose :cardinal?
 
 	def world
 		state[:world]
 	end
 	expose :world
-
-	def world=(value)
-		if state[:world] != value
-			state[:world] = value
-			reload
-		end
-
-		value
-	end
-	expose :world=
 
 	def map
 		state[:map]
@@ -242,16 +237,6 @@ class Application < Lissio::Application
 		@component.trigger :map, value if @component
 	end
 	expose :map=
-
-	def match
-		state[:match]
-	end
-	expose :match
-
-	def match=(value)
-		state[:match] = value
-	end
-	expose :match=
 
 	def size
 		state[:size] || :normal
@@ -344,6 +329,10 @@ class Application < Lissio::Application
 			step 100.% do
 				opacity 1
 			end
+		end
+
+		rule '.blink' do
+			animation :blink, 1.s, :linear, :infinite
 		end
 	end
 

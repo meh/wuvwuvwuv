@@ -20,7 +20,6 @@ module Component
 	
 		on :click, '.fa-arrow-circle-left' do
 			Application.size     = element.at_css('.size td:nth-child(2) select').value
-			Application.show     = element.at_css('.show span').inner_text == 'No'
 			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
 
 			element.css('.cardinal span').each {|el|
@@ -30,15 +29,18 @@ module Component
 				Application.state["cardinal.#{type}"] = active
 			}
 
-			Application.navigate :back
+			Application.state[:no_guilds] = element.at_css('.guilds span').inner_text == 'No'
+			Application.state[:show]      = element.at_css('.show span').inner_text == 'No'
+
 			Application.reload
+			Application.navigate :back
 		end
 
 		on :change, '.size td:nth-child(2) select' do
 			update
 		end
 
-		on :click, '.show span' do |e|
+		on :click, '.show span, .guilds span' do |e|
 			if e.on.inner_text == 'Yes'
 				e.on.inner_text = 'No'
 			else
@@ -66,6 +68,8 @@ module Component
 					el.add_class :active
 				end
 			}
+
+			element.at_css('.guilds span').inner_text = Application.no_guilds? ? 'No' : 'Yes'
 
 			update
 		end
@@ -118,6 +122,13 @@ module Component
 						td do
 							input.type(:text).max(1)
 							span ' seconds'
+						end
+					end
+
+					tr.guilds do
+						td 'Show Guilds :'
+						td do
+							span
 						end
 					end
 

@@ -49,8 +49,8 @@ class Updater
 			epoch = Time.now.to_i
 
 			Matches.find(Application.world).then {|match|
-				if Application.match != match.hash
-					Application.match = match.hash
+				if Application.state[:match] != match.hash
+					Application.state[:match] = match.hash
 
 					@maps.each(&:clear)
 				end
