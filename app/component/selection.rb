@@ -76,7 +76,20 @@ module Component
 				}
 			}
 		end
-	
+
+		on :change, 'select' do |e|
+			Application.world = e.on.value.to_i
+			update
+		end
+
+		on :map do |e, map|
+			element.css('.match img').remove_class(:active)
+
+			if map
+				element.at_css(".match .#{map} img").add_class :active
+			end
+		end
+
 		on :render do
 			if Application.world
 				update
@@ -91,19 +104,6 @@ module Component
 			end
 		end
 	
-		on :change, 'select' do |e|
-			Application.world = e.on.value.to_i
-			update
-		end
-
-		on :map do |e, map|
-			element.css('.match img').remove_class(:active)
-
-			if map
-				element.at_css(".match .#{map} img").add_class :active
-			end
-		end
-
 		tag class: :selection
 	
 		html do
