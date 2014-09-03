@@ -18,14 +18,14 @@ class Map
 	end
 
 	class Objective < Browser::Storage
-		attr_reader :full, :common, :alias
+		attr_reader :map, :full, :common, :alias
 
 		def initialize(map, block)
 			@map = map
 
 			instance_eval(&block)
 
-			super(`window`, "#@map.#@id")
+			super(`window`, "#{@map.name}.#@id")
 			no_autosave!
 		end
 
@@ -50,7 +50,17 @@ class Map
 			@alias  = aka
 		end
 
-		%w[id type location].each {|name|
+		Point = Struct.new(:x, :y)
+
+		def location(*args)
+			if args.empty?
+				@location
+			else
+				@location = Point.new(*args)
+			end
+		end
+
+		%w[id type cardinal].each {|name|
 			define_method name do |value = nil|
 				if value
 					instance_variable_set "@#{name}", value
@@ -92,12 +102,26 @@ class Map
 			self[:owner] = value
 		end
 
+		class Guild < Struct.new(:id, :name, :tag)
+			def self.json_create(data)
+				new(data[:id], data[:name], data[:tag])
+			end
+
+			def to_json
+				{ JSON.create_id => self.class.name, id: id, name: name, tag: tag }.to_json
+			end
+		end
+
 		def guild
 			self[:guild]
 		end
 
 		def guild=(value)
-			self[:guild] = value
+			if value.nil?
+				self[:guild] = nil
+			else
+				self[:guild] = Guild.new(value.id, value.name, value.tag)
+			end
 		end
 
 		def points
@@ -115,14 +139,22 @@ class Map
 		(@objectives ||= []) << block
 	end
 
+	def self.id(value = nil)
+		value ? @id = value : @id
+	end
+
 	def initialize
 		@objectives = self.class.instance_variable_get(:@objectives).map {|block|
-			Objective.new(name, block)
+			Objective.new(self, block)
 		}
 	end
 
 	def name
 		self.class.name.match(/([^:]+)$/)[1].downcase
+	end
+
+	def id
+		self.class.id
 	end
 
 	include Enumerable

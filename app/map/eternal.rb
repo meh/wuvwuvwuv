@@ -10,158 +10,181 @@
 
 class Map
 	class Eternal < self
+		id 38
+
 		objective do
 			id 11
 			name 'Tower', "Aldon's Ledge", 'Aldon'
 			type :tower
-			location :ww
+			cardinal :ww
+			location -26110.56, -12943.2
 		end
 
 		objective do
 			id 10
 			name 'Green Mine', "Rogue's Quarry", 'Rogue'
 			type :camp
-			location :w
+			cardinal :w
+			location -22010.16, -2349.6
 		end
 
 		objective do
 			id 12
-			name 'Tower', 'Wildcreek Run', 'Wildcreek'
+			name 'Tower', 'Wildcreek Run', 'Creek'
 			type :tower
-			location :w
+			cardinal :w
+			location -12559.92, -5227.2
 		end
 
 		objective do
 			id 3
 			name 'Keep', 'Green'
 			type :keep
-			location :sw
+			cardinal :sw
+			location -19802.4, -17690.4
 		end
 
 		objective do
 			id 14
 			name 'Tower', 'Klovan Gully', 'Klovan'
 			type :tower
-			location :sw
+			cardinal :sw
+			location -5013.6, -17596.8
 		end
 
 		objective do
 			id 4
 			name 'Green Mill', 'Golanta Clearing', 'Golanta'
 			type :camp
-			location :sw
+			cardinal :sw
+			location -7497.6, -25468.8
 		end
 
 		objective do
 			id 13
 			name 'Tower', "Jerrifer's Slough", 'Jerrifer'
 			type :tower
-			location :ssw
+			cardinal :ssw
+			location 15682.08, -25161.6
 		end
 
 		objective do
 			id 17
 			name 'Tower', "Mendon's Gap", 'Mendon'
 			type :tower
-			location :nnw
+			cardinal :nnw
+			location -5599.2, 22768.8
 		end
 
 		objective do
 			id 6
 			name 'Red Mill', 'Speldan Clearcut', 'Speldan'
 			type :camp
-			location :nw
+			cardinal :nw
 		end
 
 		objective do
 			id 18
 			name 'Tower', 'Anzalias Pass', 'Anza'
 			type :tower
-			location :nw
+			cardinal :nw
+			location -16848.72, 19048.8
 		end
 
 		objective do
 			id 1
 			name 'Keep', 'Red'
 			type :keep
-			location :n
+			cardinal :n
+			location 4548, 17078.4
 		end
 
 		objective do
 			id 19
 			name 'Tower', 'Ogrewatch Cut', 'Ogre'
 			type :tower
-			location :ne
+			cardinal :ne
+			location 12072, 10622.4
 		end
 
 		objective do
 			id 5
 			name 'Red Mine', 'Pangloss Rise', 'Pangloss'
 			type :camp
-			location :ne
+			cardinal :ne
+			location 18393.6, 13939.2
 		end
 
 		objective do
 			id 20
 			name 'Tower', 'Veloka Slope', 'Veloka'
 			type :tower
-			location :nne
+			cardinal :nne
+			location 13173.6, 2058
 		end
 
 		objective do
 			id 22
 			name 'Tower', 'Bravost Escarpment', 'Bravost'
 			type :tower
-			location :ee
+			cardinal :ee
+			location 29232, -11200.8
 		end
 
 		objective do
 			id 8
 			name 'Blue Mill', 'Umberglade Woods', 'Umber'
 			type :camp
-			location :e
+			cardinal :e
+			location 25802.4, -2716.8
 		end
 
 		objective do
 			id 21
 			name 'Tower', 'Durios Gulch', 'Durios'
 			type :tower
-			location :e
+			cardinal :e
+			location 17412, -5109.6
 		end
 
 		objective do
 			id 2
 			name 'Keep', 'Blue'
 			type :keep
-			location :se
+			cardinal :se
+			location 25620, -20251.2
 		end
 
 		objective do
 			id 16
 			name 'Tower', 'Quentin Lake', 'Quentin'
 			type :tower
-			location :se
+			cardinal :se
+			location 10137.6, -21256.8
 		end
 
 		objective do
 			id 7
 			name 'Blue Mine', 'Danelon Passage', 'Danelon'
 			type :camp
-			location :se
+			cardinal :se
+			location 13310.4, -28867.2
 		end
 
 		objective do
 			id 15
 			name 'Tower', 'Langor Gulch', 'Langor'
 			type :tower
-			location :sse
+			cardinal :sse
+			location 21544.8, -27280.8
 		end
 
 		objective do
 			id 9
 			name 'Castle', 'Stonemist Castle', 'SM'
 			type :castle
-			location :c
+			cardinal :c
+			location 2690.4, -5174.4
 		end
 	end
 end

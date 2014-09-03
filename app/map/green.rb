@@ -10,130 +10,150 @@
 
 class Map
 	class Green < self
+		id 95
+
 		objective do
 			id 49
 			name 'Workshop', 'Bluevale Refuge', 'Vale'
 			type :camp
-			location :sw
+			cardinal :sw
+			location -19053.12, -18657.6
 		end
 
 		objective do
 			id 45
 			name 'Tower', 'Bluebriar', 'Briar'
 			type :tower
-			location :sw
+			cardinal :sw
+			location -7544.64, -17548.8
 		end
 
 		objective do
 			id 44
 			name 'Keep', 'Dreadfall Bay', 'Bay'
 			type :keep
-			location :w
+			cardinal :w
+			location -22857.36, -6789.6
 		end
 
 		objective do
 			id 48
 			name 'Quarry', 'Faithleap', 'Faith'
 			type :camp
-			location :nw
+			cardinal :nw
+			location -21083.28, 11462.4
 		end
 
 		objective do
 			id 47
 			name 'Tower', 'Sunnyhill', 'Sunny'
 			type :tower
-			location :nw
+			cardinal :nw
+			location -14153.52, 14712
 		end
 
 		objective do
 			id 56
 			name 'Crossroads', 'The Titanpaw', 'North'
 			type :camp
-			location :n
+			cardinal :n
+			location 232.8, 34180.8
 		end
 
 		objective do
 			id 46
 			name 'Keep', 'Garrison', 'Garri'
 			type :keep
-			location :c
+			cardinal :c
+			location -441.6, 9160.8
 		end
 
 		objective do
 			id 43
 			name 'Orchard', "Hero's Lodge", 'South'
 			type :camp
-			location :s
+			cardinal :s
+			location -648, -32762.4
 		end
 
 		objective do
 			id 57
 			name 'Tower', 'Cragtop', 'Crag'
 			type :tower
-			location :ne
+			cardinal :ne
+			location 12969.6, 12840
 		end
 
 		objective do
 			id 54
 			name 'Lumber Mill', 'Foghaven', 'Fog'
 			type :camp
-			location :ne
+			cardinal :ne
+			location 23253.36, 12273.6
 		end
 
 		objective do
 			id 41
 			name 'Keep', 'Shadaran Hills', 'Hills'
 			type :keep
-			location :e
+			cardinal :e
+			location 22421.04, -5016
 		end
 
 		objective do
 			id 42
 			name 'Tower', 'Redlake', 'Lake'
 			type :tower
-			location :se
+			cardinal :se
+			location 11154.72, -16648.8
 		end
 
 		objective do
 			id 55
 			name 'Fishing Village', 'Redwater Lowlands', 'Water'
 			type :camp
-			location :se
+			cardinal :se
+			location 22442.16, -19444.8
 		end
 
 		objective do
 			id 74
 			name "Bauer's Estate"
 			type :ruin
-			location :nw
+			cardinal :nw
+			location -5251.525, -783.006
 		end
 
 		objective do
 			id 75
 			name "Battle's Hollow"
 			type :ruin
-			location :sw
+			cardinal :sw
+			location -7939.68, -9885.6
 		end
 
 		objective do
 			id 76
 			name 'Temple of Lost Prayers'
 			type :ruin
-			location :s
+			cardinal :s
+			location -279.59, -16015.255
 		end
 
 		objective do
 			id 72
 			name "Carver's Ascent"
 			type :ruin
-			location :se
+			cardinal :se
+			location 6802.815, -10643.904
 		end
 
 		objective do
 			id 73
 			name 'Orchard Overlook'
 			type :ruin
-			location :ne
+			cardinal :ne
+			location 5983.412, -2110.027
 		end
 	end
 end
