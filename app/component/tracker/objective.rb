@@ -9,7 +9,7 @@
 #++
 
 module Component
-	class Objective < Lissio::Component
+	class Tracker::Objective < Lissio::Component
 		def initialize(objective)
 			@objective = objective
 		end
@@ -28,12 +28,14 @@ module Component
 				icon.add_class owner
 			end
 
-			claim = element.at_css('.icon .guild')
+			unless Application.no_guilds?
+				claim = element.at_css('.icon .guild')
 
-			if guild
-				claim.inner_text = "[#{guild.tag}]"
-			else
-				claim.inner_text = ''
+				if guild
+					claim.inner_text = "[#{guild.tag}]"
+				else
+					claim.inner_text = ''
+				end
 			end
 
 			unless ruin?
@@ -55,7 +57,7 @@ module Component
 
 			if minutes == 0 && seconds == 1
 				el.inner_text = ''
-				el.remove_class :active, :lowest
+				el.remove_class :active, :low, :blink
 
 				next
 			end
@@ -67,9 +69,10 @@ module Component
 			end
 
 			if minutes == 4 && seconds == 55
-				el.add_class :highest
+				el.add_class :high
+				el.add_class :blink
 			elsif minutes == 4 && seconds == 45
-				el.remove_class :highest
+				el.remove_class :blink
 				el.add_class :high
 			elsif minutes == 3 && seconds == 0
 				el.remove_class :high
@@ -78,8 +81,7 @@ module Component
 				el.remove_class :medium
 				el.add_class :low
 			elsif minutes == 0 && seconds == 10
-				el.remove_class :low
-				el.add_class :lowest
+				el.add_class :blink
 			end
 		end
 
@@ -91,19 +93,19 @@ module Component
 				el.inner_text = ''
 			elsif diff > 55 * 60
 				el.inner_text = '+'
-				el.remove_class :low, :medium, :high
-				el.add_class :highest
+				el.remove_class :low, :medium
+				el.add_class :high, :blink
 			elsif diff > 50 * 60
 				el.inner_text = '+'
-				el.remove_class :low, :medium, :highest
+				el.remove_class :low, :medium, :blink
 				el.add_class :high
 			elsif diff > 30 * 60
 				el.inner_text = '+'
-				el.remove_class :low, :high, :highest
+				el.remove_class :low, :high, :blink
 				el.add_class :medium
 			else
 				el.inner_text = '+'
-				el.remove_class :medium, :high, :highest
+				el.remove_class :medium, :high, :blink
 				el.add_class :low
 			end
 		end
@@ -132,28 +134,30 @@ module Component
 		end
 
 		on :render do
-			epoch      = Time.new.to_i
-			difference = epoch - capped
-
-			if difference > 0 && difference <= 5 * 60
-				el        = element.at_css(".timer")
-				remaining = (5 * 60) - difference
-				minutes   = (remaining / 60).floor
-				seconds   = remaining % 60
-
-				el.inner_text = '%d:%02d' % [minutes, seconds]
-				el.add_class :active
-
-				if minutes == 4 && seconds > 45
-					el.add_class :highest
-				elsif minutes >= 3
-					el.add_class :high
-				elsif minutes >= 1
-					el.add_class :medium
-				elsif seconds > 10
-					el.add_class :low
-				else
-					el.add_class :lowest
+			unless ruin?
+				epoch      = Time.new.to_i
+				difference = epoch - capped
+	
+				if difference > 0 && difference <= 5 * 60
+					el        = element.at_css(".timer")
+					remaining = (5 * 60) - difference
+					minutes   = (remaining / 60).floor
+					seconds   = remaining % 60
+	
+					el.inner_text = '%d:%02d' % [minutes, seconds]
+					el.add_class :active
+	
+					if minutes == 4 && seconds > 45
+						el.add_class :high, :blink
+					elsif minutes >= 3
+						el.add_class :high
+					elsif minutes >= 1
+						el.add_class :medium
+					elsif seconds > 10
+						el.add_class :low
+					else
+						el.add_class :low, :blink
+					end
 				end
 			end
 
@@ -161,7 +165,7 @@ module Component
 				element.at_css(".icon img").add_class owner
 			end
 
-			if guild
+			if guild && !Application.no_guilds?
 				element.at_css('.icon .guild').inner_text = "[#{guild.tag}]"
 			end
 
@@ -198,10 +202,10 @@ module Component
 			end
 
 			_.div.name do
-				if ruin? || Application.state["cardinal.#{type}"]
-					_.div.cardinal cardinal.upcase
+				if ruin? || Application.cardinal?(type)
+					_.span.cardinal cardinal.upcase
 				else
-					_.div name
+					_.span name
 				end
 			end
 
@@ -238,7 +242,7 @@ module Component
 					position :absolute
 					left 0
 					bottom 4.px
-					font size: 8.px
+					font size: 10.px
 
 					pointer events: :none
 				end
@@ -316,13 +320,6 @@ module Component
 				end
 			end
 
-			rule '.highest' do
-				text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
-				             (', 0 0 1px #b20000' * 10)
-
-				animation 'blink 1s linear infinite'
-			end
-
 			rule '.high' do
 				text shadow: (', 0 0 2px #b20000' * 10)[1 .. -1] +
 				             (', 0 0 1px #b20000' * 10)
@@ -336,13 +333,6 @@ module Component
 			rule '.low' do
 				text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
 				             (', 0 0 1px #007a20' * 10)
-			end
-
-			rule '.lowest' do
-				text shadow: (', 0 0 2px #007a20' * 10)[1 .. -1] +
-				             (', 0 0 1px #007a20' * 10)
-
-				animation 'blink 1s linear infinite'
 			end
 		end
 
@@ -365,150 +355,6 @@ module Component
 				rule '.objective' do
 					font size: 16.px
 					width 46.px
-				end
-			end
-
-			media '(max-width: 1024px)' do
-				# RIP ;_;
-			end
-
-			media '(max-width: 1280px)' do
-				rule 'body.small', 'body.normal' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 10.px
-							width 34.px
-
-							rule '.timer' do
-								font size: 14.px
-							end
-						end
-					end
-				end
-			end
-
-			media '(max-width: 1366px)' do
-				rule 'body.small', 'body.normal' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 10.px
-							width 34.px
-
-							rule '.timer' do
-								font size: 14.px
-							end
-						end
-					end
-				end
-			end
-
-			media '(max-width: 1440px)' do
-				rule 'body.small', 'body.normal' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 10.px
-							width 38.px
-
-							rule '.timer' do
-								font size: 14.px
-							end
-						end
-					end
-				end
-
-				rule 'body.large' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 10.px
-							width 36.px
-
-							rule '.timer' do
-								font size: 14.px
-							end
-						end
-					end
-				end
-			end
-
-			media '(max-width: 1680px)' do
-				rule 'body.small', 'body.normal' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 13.px
-							width 48.px
-
-							rule '.timer' do
-								font size: 14.px
-							end
-						end
-					end
-				end
-
-				rule 'body.large' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 12.px
-							width 46.px
-
-							rule '.timer' do
-								font size: 15.px
-							end
-						end
-					end
-				end
-
-				rule 'body.larger' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 12.px
-							width 43.px
-
-							rule '.timer' do
-								font size: 16.px
-							end
-						end
-					end
-				end
-			end
-
-			media '(max-width: 1920px)' do
-				rule 'body.small', 'body.normal' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 14.px
-							width 50.px
-
-							rule '.timer' do
-								font size: 14.px
-							end
-						end
-					end
-				end
-
-				rule 'body.large' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 15.px
-							width 56.px
-
-							rule '.timer' do
-								font size: 15.px
-							end
-						end
-					end
-				end
-
-				rule 'body.larger' do
-					rule '.tracker.eternal' do
-						rule '.objective' do
-							font size: 15.px
-							width 54.px
-
-							rule '.timer' do
-								font size: 16.px
-							end
-						end
-					end
 				end
 			end
 		end

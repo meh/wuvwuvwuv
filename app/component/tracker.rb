@@ -8,8 +8,6 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 #++
 
-require 'component/objective'
-
 module Component
 	class Tracker < Lissio::Component
 		attr_reader :name
@@ -88,7 +86,6 @@ module Component
 			end
 		end
 
-		# control for width
 		css! do
 			rule '.tracker .control' do
 				position :absolute
@@ -113,6 +110,191 @@ module Component
 			rule 'body.larger .tracker .control' do
 				width 360.px
 			end
+
+			media '(max-width: 1024px)' do
+				# RIP ;_;
+			end
+
+			media '(max-width: 1280px)' do
+				rule 'body.small', 'body.normal' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 10.px
+							width 34.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1366px)' do
+				rule 'body.small' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 10.px
+							width 38.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+
+				rule 'body.normal' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 10.px
+							width 34.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1440px)' do
+				rule 'body.small' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 11.px
+							width 41.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+
+				rule 'body.normal' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 10.px
+							width 38.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+
+				rule 'body.large' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 10.px
+							width 36.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1680px)' do
+				rule 'body.small' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 14.px
+							width 52.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+
+				rule 'body.small', 'body.normal' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 13.px
+							width 48.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+
+				rule 'body.large' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 13.px
+							width 47.px
+
+							rule '.timer' do
+								font size: 15.px
+							end
+						end
+					end
+				end
+
+				rule 'body.larger' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 12.px
+							width 43.px
+
+							rule '.timer' do
+								font size: 16.px
+							end
+						end
+					end
+				end
+			end
+
+			media '(max-width: 1920px)' do
+				rule 'body.small', 'body.normal' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 14.px
+							width 50.px
+
+							rule '.timer' do
+								font size: 14.px
+							end
+						end
+					end
+				end
+
+				rule 'body.large' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 15.px
+							width 56.px
+
+							rule '.timer' do
+								font size: 15.px
+							end
+						end
+					end
+				end
+
+				rule 'body.larger' do
+					rule '.tracker.eternal' do
+						rule '.objective' do
+							font size: 15.px
+							width 54.px
+
+							rule '.timer' do
+								font size: 16.px
+							end
+						end
+					end
+				end
+			end
 		end
 	end
 end
+
+require 'component/tracker/objective'
