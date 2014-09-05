@@ -147,7 +147,7 @@ module Component
 					rule '.tracker.eternal' do
 						rule '.objective' do
 							font size: 10.px
-							width 38.px
+							width 37.px
 
 							rule '.timer' do
 								font size: 14.px
