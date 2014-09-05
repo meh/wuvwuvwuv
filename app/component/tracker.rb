@@ -18,6 +18,18 @@ module Component
 			@objectives = @map.map { |o| Objective.new(o) }
 		end
 
+		on 'page:load' do
+			@objectives.each {|objective|
+				objective.trigger! 'page:load'
+			}
+		end
+
+		on 'page:unload' do
+			@objectives.each {|objective|
+				objective.trigger! 'page:unload'
+			}
+		end
+
 		on :render do
 			element.add_class @name
 		end
@@ -87,29 +99,29 @@ module Component
 		end
 
 		css! do
-			rule '.tracker .control' do
-				position :absolute
-				top 0
-				right 0
-				border left: [1.px, :solid, :black]
-				height 400.px
-			end
-
-			rule 'body.small .tracker .control' do
-				width 260.px
-			end
-
-			rule 'body.normal .tracker .control' do
-				width 300.px
-			end
-
-			rule 'body.large .tracker .control' do
-				width 320.px
-			end
-
-			rule 'body.larger .tracker .control' do
-				width 360.px
-			end
+#			rule '.tracker .control' do
+#				position :absolute
+#				top 0
+#				right 0
+#				border left: [1.px, :solid, :black]
+#				height 400.px
+#			end
+#
+#			rule 'body.small .tracker .control' do
+#				width 260.px
+#			end
+#
+#			rule 'body.normal .tracker .control' do
+#				width 300.px
+#			end
+#
+#			rule 'body.large .tracker .control' do
+#				width 320.px
+#			end
+#
+#			rule 'body.larger .tracker .control' do
+#				width 360.px
+#			end
 
 			media '(max-width: 1024px)' do
 				# RIP ;_;

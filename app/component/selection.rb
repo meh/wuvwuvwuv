@@ -92,6 +92,18 @@ module Component
 			end
 		end
 
+		on 'page:load' do
+			@interval = every 60 do
+				if Application.world
+					update
+				end
+			end
+		end
+
+		on 'page:unload' do
+			@interval.abort
+		end
+
 		on :render do
 			if Application.world
 				update
@@ -99,10 +111,6 @@ module Component
 
 			if map = Application.map
 				element.at_css(".match .#{map} img").add_class :active
-			end
-	
-			every 60 do
-				update
 			end
 		end
 	
@@ -313,12 +321,40 @@ module Component
 		end
 
 		css! do
-			rule 'body.small', 'body.normal' do
+			rule 'body.small' do
 				rule '.selection' do
 					rule '.content' do
 						rule '.world' do
 							rule '.name' do
-								font size: 18.px
+								font size: 17.px
+							end
+						end
+	
+						rule '.match' do
+							font size: 15.px
+	
+							rule '.rank' do
+								font size: 12.px
+							end
+	
+							rule '.info' do
+								font size: 14.px
+							end
+	
+							rule '.bloodlust' do
+								font size: 13.px
+							end
+						end
+					end
+				end
+			end
+
+			rule 'body.normal' do
+				rule '.selection' do
+					rule '.content' do
+						rule '.world' do
+							rule '.name' do
+								font size: 17.px
 							end
 						end
 	

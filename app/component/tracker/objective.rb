@@ -132,6 +132,28 @@ module Component
 
 			siege
 		end
+		
+		on 'page:load' do
+			@timer = every 1 do
+				timer
+			end
+
+			@siege = every 60 do
+				siege
+			end
+
+			@storage = $window.on :storage do |e|
+				next unless e.key == "#{map.name}.#{id}"
+
+				update
+			end
+		end
+
+		on 'page:unload' do
+			@timer.abort
+			@siege.abort
+			@storage.off
+		end
 
 		on :render do
 			unless ruin?
@@ -173,22 +195,7 @@ module Component
 				element.at_css('.icon .tier').inner_text = tier
 			end
 
-			every 1 do
-				timer
-			end
-
-			every 60 do
-				siege
-			end
-
 			siege
-
-			$window.on :storage do |e|
-				next e.off unless element.parent
-				next unless e.key == "#{map.name}.#{id}"
-
-				update
-			end
 		end
 
 		tag class: :objective

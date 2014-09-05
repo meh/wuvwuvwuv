@@ -142,7 +142,12 @@ class Application < Lissio::Application
 	expose :reload
 
 	def load(component)
-		element.at_css('#container').inner_dom = (@component = component).render
+		@current.trigger! 'page:unload' if @current
+		@current = component
+
+		element.at_css('#container').inner_dom = @current.render
+
+		@current.trigger! 'page:load'
 	end
 
 	def updater
@@ -208,7 +213,7 @@ class Application < Lissio::Application
 			reload
 		end
 
-		@component.trigger :map, value if @component
+		@current.trigger! :map, value if @current
 	end
 	expose :map!
 
@@ -234,7 +239,7 @@ class Application < Lissio::Application
 			reload
 		end
 
-		@component.trigger :map, value if @component
+		@current.trigger! :map, value if @current
 	end
 	expose :map=
 
