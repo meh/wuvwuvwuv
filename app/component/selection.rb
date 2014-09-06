@@ -37,7 +37,11 @@ module Component
 		on :click, '.match img' do |e|
 			next unless Application.world
 	
-			Application.map! e.on.parent.class_name
+			if e.on.class_names.include? :active
+				Application.map! nil
+			else
+				Application.map! e.on.parent.class_name
+			end
 		end
 
 		def rank_for(n)

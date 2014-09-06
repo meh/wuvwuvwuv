@@ -126,7 +126,7 @@ class Application < Lissio::Application
 	def setup(what)
 		if what == :selection
 			state.delete(:map)
-			state.delete(:explicit)
+			state.delete('map.explicit')
 
 			updater
 		elsif what == :tracker
@@ -195,15 +195,17 @@ class Application < Lissio::Application
 	expose :map
 
 	def map!(value)
-		state[:map]      = value
-		state[:explicit] = true
+		state[:map]           = value
+		state['map.explicit'] = !value.nil?
 
 		if Overwolf.available?
 			Promise.when(Overwolf::Window.open('TrackerWindow'),
 			             Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
 				window = c.closed? ? u : c
 
-				if window.closed?
+				if value.nil?
+					window.close
+				elsif window.closed?
 					window.restore
 				else
 					reload
@@ -218,7 +220,7 @@ class Application < Lissio::Application
 	expose :map!
 
 	def map=(value)
-		next if state[:explicit]
+		next if state['map.explicit']
 
 		state[:map] = value
 
