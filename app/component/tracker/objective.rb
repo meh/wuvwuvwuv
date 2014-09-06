@@ -19,6 +19,7 @@ module Component
 		end
 
 		def update
+			previous = owner
 			reload
 
 			icon = element.at_css(".icon img")
@@ -38,7 +39,7 @@ module Component
 				end
 			end
 
-			unless ruin?
+			unless ruin? || previous == owner
 				tier  = element.at_css(".icon .tier")
 				siege = element.at_css(".icon .siege")
 				timer = element.at_css(".timer")
