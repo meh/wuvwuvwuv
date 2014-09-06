@@ -11,6 +11,10 @@
 class Mumble
 	include Native
 
+	def initialize(embed)
+		super(`embed.snapshot()`)
+	end
+
 	alias_native :tick
 	alias_native :name
 
