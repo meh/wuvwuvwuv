@@ -66,18 +66,20 @@ class Updater
 
 						unless local.guild.nil? && remote.guild!.nil?
 							if remote.guild!.nil?
-								local.guild = nil
+								local.commit {
+									local.guild = nil
+								}
 							elsif local.guild.nil?
 								remote.guild.then {|guild|
-									local.reload
-									local.guild = guild
-									local.save
+									local.commit {
+										local.guild = guild
+									}
 								}
 							elsif local.guild.id != remote.guild!
 								remote.guild.then {|guild|
-									local.reload
-									local.guild = guild
-									local.save
+									local.commit {
+										local.guild = guild
+									}
 								}
 							end
 						end
