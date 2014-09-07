@@ -16,6 +16,7 @@ require 'browser/screen'
 require 'browser/storage'
 require 'browser/delay'
 require 'browser/interval'
+require 'browser/immediate'
 require 'browser/console'
 
 require 'world'

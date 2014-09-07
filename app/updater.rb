@@ -66,16 +66,12 @@ class Updater
 
 						unless local.guild.nil? && remote.guild!.nil?
 							if remote.guild!.nil?
-								local.commit {
-									local.guild = nil
-								}
-							elsif local.guild.nil?
-								remote.guild.then {|guild|
+								Promise.defer.then {
 									local.commit {
-										local.guild = guild
+										local.guild = nil
 									}
 								}
-							elsif local.guild.id != remote.guild!
+							elsif local.guild.nil? || local.guild.id != remote.guild!
 								remote.guild.then {|guild|
 									local.commit {
 										local.guild = guild
