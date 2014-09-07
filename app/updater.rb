@@ -23,13 +23,13 @@ class Updater
 		@tracker ||= -> {
 			next @tracker.after(1) unless Application.mumble?
 
-			mumble = Application.mumble
+			map = Application.mumble.identity[:map_id]
 
-			if @mumble && @mumble.identity[:map_id] == mumble.identity[:map_id]
+			if @map == map
 				next @tracker.after(1)
 			end
 
-			Application.map = case mumble.identity[:map_id]
+			Application.map = case map
 			                  when Map::Eternal.id then :eternal
 			                  when Map::Red.id     then :red
 			                  when Map::Green.id   then :green
@@ -37,7 +37,7 @@ class Updater
 			                  else                      nil
 			                  end
 
-			@mumble = mumble
+			@map = map
 			@tracker.after(1)
 		}
 	end
