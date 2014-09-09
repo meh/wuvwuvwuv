@@ -22,9 +22,13 @@ require 'world'
 require 'match'
 require 'map'
 require 'updater'
-require 'mumble'
 
+require 'mumble'
 require 'component/mumble'
+
+require 'clipboard'
+require 'component/clipboard'
+
 require 'component/selection'
 require 'component/help'
 require 'component/configuration'
@@ -163,6 +167,11 @@ class Application < Lissio::Application
 		@mumble.new
 	end
 	expose :mumble
+
+	def clipboard
+		@clipboard.new
+	end
+	expose :clipboard
 
 	def state
 		$window.storage(:state)
@@ -312,6 +321,7 @@ class Application < Lissio::Application
 
 	html do |_|
 		_ << @mumble
+		_ << @clipboard
 		_.div.container! 'Loading...'
 	end
 
