@@ -18,6 +18,7 @@ class Map
 			type :camp
 			cardinal :sw
 			location -19053.6, -18657.6
+			link '[&BC4FAAA=]'
 		end
 
 		objective do
@@ -26,6 +27,7 @@ class Map
 			type :tower
 			cardinal :sw
 			location -7545.6, -17548.8
+			link '[&BCoFAAA=]'
 		end
 
 		objective do
@@ -34,6 +36,7 @@ class Map
 			type :keep
 			cardinal :w
 			location -22857.6, -6789.6
+			link '[&BCgFAAA=]'
 		end
 
 		objective do
@@ -42,6 +45,7 @@ class Map
 			type :camp
 			cardinal :nw
 			location -21084, 11462.4
+			link '[&BCkFAAA=]'
 		end
 
 		objective do
@@ -50,6 +54,7 @@ class Map
 			type :tower
 			cardinal :nw
 			location -14152.8, 14712
+			link '[&BCwFAAA=]'
 		end
 
 		objective do
@@ -58,6 +63,7 @@ class Map
 			type :camp
 			cardinal :n
 			location 232.8, 34180.8
+			link '[&BB8FAAA=]'
 		end
 
 		objective do
@@ -66,6 +72,7 @@ class Map
 			type :keep
 			cardinal :c
 			location -441.6, 9160.8
+			link '[&BCQFAAA=]'
 		end
 
 		objective do
@@ -74,6 +81,7 @@ class Map
 			type :camp
 			cardinal :s
 			location -648, -32762.4
+			link '[&BCUFAAA=]'
 		end
 
 		objective do
@@ -82,6 +90,7 @@ class Map
 			type :tower
 			cardinal :ne
 			location 12969.6, 12840
+			link '[&BC0FAAA=]'
 		end
 
 		objective do
@@ -90,6 +99,7 @@ class Map
 			type :camp
 			cardinal :ne
 			location 23253.6, 12273.6
+			link '[&BCEFAAA=]'
 		end
 
 		objective do
@@ -98,6 +108,7 @@ class Map
 			type :keep
 			cardinal :e
 			location 22420.8, -5016
+			link '[&BCAFAAA=]'
 		end
 
 		objective do
@@ -106,6 +117,7 @@ class Map
 			type :tower
 			cardinal :se
 			location 11155.2, -16648.8
+			link '[&BCsFAAA=]'
 		end
 
 		objective do
@@ -114,6 +126,7 @@ class Map
 			type :camp
 			cardinal :se
 			location 22442.4, -19444.8
+			link '[&BCYFAAA=]'
 		end
 
 		objective do

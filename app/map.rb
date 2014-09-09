@@ -60,7 +60,7 @@ class Map
 			end
 		end
 
-		%w[id type cardinal].each {|name|
+		%w[id type cardinal link].each {|name|
 			define_method name do |value = nil|
 				if value
 					instance_variable_set "@#{name}", value
