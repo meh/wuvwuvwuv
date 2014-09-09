@@ -92,26 +92,30 @@ module Component
 
 			Tier
 			----
-			When the tracker is clickable, you'll be able to left click on any
-			objective, and it will cause it to bump the tier level of the objective
-			which will be shown on the top left corner of the objective icon.
+			Left clicking on any objective will cause it to bump the tier by one
+			level, or reset it if it's at the maximum, which will be shown on the top
+			left corner of the objective icon.
 
-			Once the objective has been flipped the tier will be reset.
+			Once the objective has been flipped the tier will be automatically reset.
 
 			Siege Refresh
 			-------------
-			When the tracker is clickable, you'll be able to right click on any
-			objective to refresh the siege, this will add a `+` sign on the top right
-			corner of the objective icon.
+			Right clicking on any objective will cause it to refresh the siege timer,
+			which will add a `+` sign on the top right corner of the objective icon.
 
-			This `+` will start as green, then it will turn orange after 30 minutes,
-			then it will turn red when 10 minutes are left, and it will start
-			blinking when 5 minutes are left.
+			This `+` will start as green, then turn orange after 30 minutes, then
+			turn red when 10 minutes are left, and start blinking when 5 minutes are
+			left.
 
 			Guild Claiming
 			--------------
 			Unless disabled the claiming guild tag will be shown on the bottom of the
-			icon.
+			objective icon.
+
+			Chat Link
+			---------
+			Middle clicking on any objective will copy its chat link on the
+			clipboard, so you can easily report in team chat.
 
 			Configuration
 			=============
