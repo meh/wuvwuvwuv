@@ -15,6 +15,7 @@ class Updater
 	def initialize
 		@maps   = Map.all
 		@mumble = nil
+		@map    = nil
 
 		start
 	end
@@ -34,7 +35,6 @@ class Updater
 			                  when Map::Red.id     then :red
 			                  when Map::Green.id   then :green
 			                  when Map::Blue.id    then :blue
-			                  else                      nil
 			                  end
 
 			@map = map
