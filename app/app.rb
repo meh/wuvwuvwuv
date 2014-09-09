@@ -303,7 +303,7 @@ class Application < Lissio::Application
 				margin: 20.px,
 			  border: '2px solid black',
 			  width: width.px,
-			  height: 400.px
+			  height: 500.px
 		end
 	end
 
