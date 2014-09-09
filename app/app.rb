@@ -60,7 +60,8 @@ class Application < Lissio::Application
 			move!
 		end
 
-		@mumble = Component::Mumble.new
+		@mumble    = Component::Mumble.new
+		@clipboard = Component::Clipboard.new
 	end
 
 	def start
