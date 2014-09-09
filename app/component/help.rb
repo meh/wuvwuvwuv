@@ -12,30 +12,165 @@ require 'lissio/component/markdown'
 
 module Component
 	class Text < Lissio::Component::Markdown
+		def children(parent)
+			array = []
+			el    = parent.next_element
+
+			until el.nil? || el =~ parent.name || el =~ 'h1'
+				array << el
+
+				el = el.next_element
+			end
+
+			Browser::DOM::NodeSet[array]
+		end
+
+		on :click, 'h1' do |e|
+			if e.on.at_css('.arrow').class_names.include? :open
+				children(e.on).style(display: :none)
+				e.on.at_css('.arrow').remove_class :open
+			else
+				element.css('h1').each {|el|
+					el.at_css('.arrow').remove_class :open
+					children(el).style(display: :none)
+				}
+
+				children(e.on).style(display: :block)
+				e.on.at_css('.arrow').add_class :open
+
+				children(e.on).filter('h2').each {|el|
+					children(el).style(display: :none)
+				}
+			end
+		end
+
+		on :click, 'h2' do |e|
+			if e.on.at_css('.arrow').class_names.include? :open
+				children(e.on).style(display: :none)
+				e.on.at_css('.arrow').remove_class :open
+			else
+				element.css('h2').each {|el|
+					el.at_css('.arrow').remove_class :open
+					children(el).style(display: :none)
+				}
+
+				children(e.on).style(display: :block)
+				e.on.at_css('.arrow').add_class :open
+			end
+		end
+
 		content <<-MD.gsub(/^\t{3}/m, '')
-			To choose your world just click on *World?* and select the right one from
-			the dropdown menu.
-
-			Every borderland item includes the rank of the world, the scores made by
-			each world in that map and the owner of bloodlust.
-
-			To open the tracker click on the scout icon for the map you want to
-			track; left-clicking one of the objective icons will increase the tier
-			tracker, right-clicking will reset the siege refresh tracker.
-
 			WUV³ is developed by **meh.6784** and the source is available on
 			[GitHub](https://github.com/meh/wuvwuvwuv).
+
+			Side
+			====
+			Keep track of the general state of every borderland, including total
+			points acquired in the specific map, tick in that specific map, bloodlust
+			owner and world's rank.
+
+			Before that information can be shown you have to select the world
+			clicking on **World?**.
+
+			Clicking on the scout icon will open the tracker window for the specified
+			map, although you don't have to open the tracker manually, if you go to a
+			WvW map the tracker will automatically open for that map, and if you get
+			out of WvW it will close.
+
+			Tracker
+			=======
+			The tracker can by hidden using the hotkey <span class="hotkey
+			toggle"></span>, and clickability can be toggled using the hotkey <span
+			class="hotkey clickthrough"></span>.
+
+			Timer
+			-----
+			When an objective is flipped, it will show a timer, it will be red and
+			blinking for the first 15 seconds, then it will turn orange when 3
+			minutes are left, then it will turn green when 1 minute is left, and it
+			will start blinking for the last 10 seconds.
+
+			Tier
+			----
+			When the tracker is clickable, you'll be able to left click on any
+			objective, and it will cause it to bump the tier level of the objective
+			which will be shown on the top left corner of the objective icon.
+
+			Once the objective has been flipped the tier will be reset.
+
+			Siege Refresh
+			-------------
+			When the tracker is clickable, you'll be able to right click on any
+			objective to refresh the siege, this will add a `+` sign on the top right
+			corner of the objective icon.
+
+			This `+` will start as green, then it will turn orange after 30 minutes,
+			then it will turn red when 10 minutes are left, and it will start
+			blinking when 5 minutes are left.
+
+			Guild Claiming
+			--------------
+			Unless disabled the claiming guild tag will be shown on the bottom of the
+			icon.
+
+			Configuration
+			=============
+			There are various configuration options to adapt WUV³ to your liking.
+
+			- `Interface Size` should be the same you configured Guild Wars 2 with.
+			- `In-Game Only` allows you to show the interface either only while in
+			  game or even on your desktop.
+			- `Update Every` specifies the delay between each API call, the higher
+			  the number the less precise the timer.
+			- `Show Guilds` allows you to configure whether the tracker will show who
+			  claimed a certain objective or not.
+			- `Cardinal` allows you to choose what kind of objective should be named
+			  with its cardinal position.
 		MD
 
 		on :render do
 			element.css('a').each {|el|
 				el[:target] = :_blank
 			}
+
+			element.css('h1, h2').each {|el|
+				el >> DOM do
+					div.arrow do
+						i.fa.fa[:minus, :square]
+						i.fa.fa[:plus, :square]
+					end
+				end
+			}
+
+			element.at_css('.hotkey.toggle').tap {|el|
+				if Overwolf.available?
+					Overwolf::Settings.hotkey(:toggle).then {|key|
+						el.inner_text = key
+					}
+				else
+					el.inner_text = 'Apps'
+				end
+			}
+
+			element.at_css('.hotkey.clickthrough').tap {|el|
+				if Overwolf.available?
+					Overwolf::Settings.hotkey(:clickthrough).then {|key|
+						el.inner_text = key
+					}
+				else
+					el.inner_text = 'Ctrl+Apps'
+				end
+			}
 		end
 
 		css do
 			padding right: 30.px
 			text align: :justify
+
+			rule '.hotkey', 'pre', 'code' do
+				font family: :monospace,
+				     size: 10.px
+			end
 
 			rule 'a' do
 				font weight: :bold
@@ -48,7 +183,94 @@ module Component
 					color :white
 					text decoration: :none,
 					     shadow: (', 0 0 2px #951111' * 10)[1 .. -1] +
-							         (', 0 0 1px #951111' * 10)
+					             (', 0 0 1px #951111' * 10)
+				end
+			end
+
+			rule 'p:first-child' do
+				margin 10.px, 0
+			end
+
+			rule '.arrow' do
+				font size: 10.px
+
+				rule '.fa-minus-square' do
+					display :none
+				end
+
+				rule '&.open' do
+					rule '.fa-plus-square' do
+						display :none
+					end
+
+					rule '.fa-minus-square' do
+						display 'inline-block'
+					end
+				end
+			end
+
+			rule 'h1' do
+				margin 5.px, 0
+
+				rule '&#side' do
+					margin top: 10.px
+				end
+
+				position :relative
+
+				rule '.arrow' do
+					position :absolute
+					top 4.px
+					left -18.px
+				end
+			end
+
+			rule 'h2' do
+				margin 5.px, 0
+
+				rule '&#timer' do
+					margin top: 10.px
+				end
+
+				rule '.arrow' do
+					display 'inline-block'
+
+					position :relative
+					top -2.px
+
+					padding right: 8.px
+				end
+			end
+
+			rule '& > *' do
+				display :none
+			end
+
+			rule 'h1', 'p:first-child' do
+				display :block
+			end
+
+			rule 'p' do
+				margin 5.px, 0
+			end
+
+			rule 'h2 + p', 'h2 + p + p' do
+				padding left: 20.px
+			end
+
+			rule 'ul' do
+				padding 0
+				margin top: 0
+				list style: :none
+
+				rule 'li' do
+					text indent: -12.px
+					padding bottom: 5.px
+
+					rule '&::before' do
+						padding right: 5.px
+						content '• '.inspect
+					end
 				end
 			end
 		end
@@ -135,8 +357,12 @@ module Component
 			rule 'body.small', 'body.normal' do
 				rule '.help' do
 					rule '.content' do
-						rule '.name' do
-							font size: 18.px
+						rule '.name', 'h1' do
+							font size: 17.px
+						end
+
+						rule 'h2' do
+							font size: 16.px
 						end
 
 						rule '.text' do
@@ -149,10 +375,14 @@ module Component
 			rule 'body.large' do
 				rule '.help' do
 					rule '.content' do
-						rule '.name' do
+						rule '.name', 'h1' do
 							font size: 19.px
 						end
 	
+						rule 'h2' do
+							font size: 18.px
+						end
+
 						rule '.text' do
 							font size: 16.px
 						end
@@ -163,10 +393,14 @@ module Component
 			rule 'body.larger' do
 				rule '.help' do
 					rule '.content' do
-						rule '.name' do
+						rule '.name', 'h1' do
 							font size: 20.px
 						end
-	
+
+						rule 'h2' do
+							font size: 19.px
+						end
+
 						rule '.text' do
 							font size: 17.px
 						end
