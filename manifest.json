@@ -75,7 +75,8 @@
 		},
 
 		"plugins": [
-			"npMumbleLink.dll"
+			"npMumbleLink.dll",
+			"npClipboard.dll"
 		]
 	}
 }
