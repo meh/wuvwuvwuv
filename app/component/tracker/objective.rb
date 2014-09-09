@@ -114,17 +114,21 @@ module Component
 		on :click, '.icon img' do |e|
 			next if ruin?
 
-			el = element.at_css('.icon .tier')
-
-			if tier == 3 || (tier == 2 && camp?)
-				self.tier = 0
-				el.inner_text = ''
+			if e.button == 0
+				el = element.at_css('.icon .tier')
+	
+				if tier == 3 || (tier == 2 && camp?)
+					self.tier = 0
+					el.inner_text = ''
+				else
+					self.tier += 1
+					el.inner_text = tier
+				end
+	
+				save
 			else
-				self.tier += 1
-				el.inner_text = tier
+				Application.clipboard.set link
 			end
-
-			save
 		end
 
 		on 'context:menu', '.icon img' do |e|
