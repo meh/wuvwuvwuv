@@ -53,8 +53,6 @@ module Component
 			rule '.objectives' do
 				display 'inline-block'
 
-				background image: 'linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(0,0,0,0))'
-
 				border style: :solid,
 				       width: [2.px, 0, 0, 0],
 				       image: 'linear-gradient(to right, rgba(0, 0, 0, 0), black, rgba(0, 0, 0, 0)) 1'
@@ -62,7 +60,7 @@ module Component
 
 			rule '&.blue', '&.green', '&.red' do
 				rule '.objective:nth-child(13)' do
-					border right: [1.px, :solid, :black]
+					margin right: 2.px
 					padding right: 5.px
 				end
 			end
@@ -70,7 +68,7 @@ module Component
 			rule '&.eternal' do
 				# Jerrifer
 				rule '.objective:nth-child(7)' do
-					border right: [1.px, :solid, :black]
+					margin right: 2.px
 					padding right: 1.px
 				end
 
@@ -81,7 +79,7 @@ module Component
 
 				# Veloka
 				rule '.objective:nth-child(14)' do
-					border right: [1.px, :solid, :black]
+					margin right: 2.px
 					padding right: 1.px
 				end
 
@@ -92,7 +90,7 @@ module Component
 
 				# Langor
 				rule '.objective:nth-child(21)' do
-					border right: [1.px, :solid, :black]
+					margin right: 2.px
 					padding right: 2.px
 				end
 			end

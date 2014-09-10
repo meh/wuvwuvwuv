@@ -57,7 +57,7 @@ module Component
 			minutes, seconds = el.inner_text.split(':').map(&:to_i)
 
 			if minutes == 0 && seconds == 1
-				el.inner_text = ''
+				el.inner_text = 'x'
 				el.remove_class :active, :low, :blink
 
 				next
@@ -185,6 +185,8 @@ module Component
 					else
 						el.add_class :low, :blink
 					end
+				else
+					el.inner_text = 'x'
 				end
 			end
 
@@ -221,7 +223,7 @@ module Component
 				end
 			end
 
-			_.div.timer
+			_.div.timer 'x'
 		end
 
 		css do
@@ -230,8 +232,16 @@ module Component
 			display 'inline-block'
 			padding bottom: 10.px
 
+			background image: 'linear-gradient(to bottom, rgba(0,0,0,0.30), rgba(0,0,0,0))'
+
 			rule '.timer' do
 				padding top: 5.px
+
+				opacity 0
+
+				rule '&.active' do
+					opacity 1
+				end
 			end
 
 			rule '.icon' do
