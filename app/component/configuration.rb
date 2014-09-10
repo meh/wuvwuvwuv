@@ -18,7 +18,7 @@ module Component
 			}
 		end
 	
-		on :click, '.fa-arrow-circle-left' do
+		on :click, '.back' do
 			Application.size     = element.at_css('.size td:nth-child(2) select').value
 			Application.interval = element.at_css('.interval td:nth-child(2) input').value.to_i
 
@@ -90,7 +90,7 @@ module Component
 				div.header do
 					div.name 'Configuration'
 					div.menu do
-						i.fa.fa[:arrow, :circle, :left]
+						img.back
 					end
 					div.style(clear: :both)
 				end
@@ -169,17 +169,30 @@ module Component
 				margin left: 35.px
 
 				rule '.header' do
-					rule '.name' do
-						float :left
-					end
+					position :relative
 
 					rule '.menu' do
 						vertical align: :middle
-						float :right
-						margin right: 10.px
 
-						rule 'i' do
+						position :absolute
+						top -5.px
+						right 5.px
+
+						rule 'img' do
 							cursor :pointer
+							display 'inline-block'
+
+							rule '&.back' do
+								content url('img/back.png')
+								transform rotate(180.deg)
+
+								position :relative
+								top 6.px
+
+								rule '&:hover' do
+									content url('img/back.active.png')
+								end
+							end
 						end
 					end
 

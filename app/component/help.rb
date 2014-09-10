@@ -140,8 +140,8 @@ module Component
 			element.css('h1, h2').each {|el|
 				el >> DOM do
 					div.arrow do
-						i.fa.fa[:minus, :square]
-						i.fa.fa[:plus, :square]
+						img.minus
+						img.plus
 					end
 				end
 			}
@@ -196,20 +196,30 @@ module Component
 			end
 
 			rule '.arrow' do
-				font size: 10.px
-
-				rule '.fa-minus-square' do
+				rule '.minus' do
 					display :none
 				end
 
 				rule '&.open' do
-					rule '.fa-plus-square' do
+					rule '.plus' do
 						display :none
 					end
 
-					rule '.fa-minus-square' do
+					rule '.minus' do
 						display 'inline-block'
 					end
+				end
+
+				rule '.minus' do
+					content url('img/minus.png')
+					filter grayscale(100.%)
+					width 12.px
+				end
+
+				rule '.plus' do
+					content url('img/plus.png')
+					filter grayscale(100.%)
+					width 12.px
 				end
 			end
 
@@ -224,7 +234,7 @@ module Component
 
 				rule '.arrow' do
 					position :absolute
-					top 4.px
+					top 0
 					left -18.px
 				end
 			end
@@ -240,9 +250,9 @@ module Component
 					display 'inline-block'
 
 					position :relative
-					top -2.px
+					top 1.px
 
-					padding right: 8.px
+					margin right: 5.px
 				end
 			end
 
@@ -289,7 +299,7 @@ module Component
 			}
 		end
 	
-		on :click, '.fa-arrow-circle-left' do
+		on :click, '.back' do
 			Application.navigate :back
 		end
 
@@ -304,7 +314,7 @@ module Component
 				div.header do
 					div.name 'Help & About'
 					div.menu do
-						i.fa.fa[:arrow, :circle, :left]
+						img.back
 					end
 					div.style(clear: :both)
 				end
@@ -338,17 +348,30 @@ module Component
 				margin left: 35.px
 
 				rule '.header' do
-					rule '.name' do
-						float :left
-					end
+					position :relative
 
 					rule '.menu' do
 						vertical align: :middle
-						float :right
-						margin right: 10.px
 
-						rule 'i' do
+						position :absolute
+						top -5.px
+						right 5.px
+
+						rule 'img' do
 							cursor :pointer
+							display 'inline-block'
+
+							rule '&.back' do
+								content url('img/back.png')
+								transform rotate(180.deg)
+
+								position :relative
+								top 6.px
+
+								rule '&:hover' do
+									content url('img/back.active.png')
+								end
+							end
 						end
 					end
 

@@ -26,11 +26,11 @@ module Component
 			end
 		end
 
-		on :click, '.fa-gear' do
+		on :click, '.gear' do
 			Application.navigate('/config')
 		end
 
-		on :click, '.fa-question-circle' do
+		on :click, '.question' do
 			Application.navigate('/help')
 		end
 	
@@ -129,8 +129,8 @@ module Component
 				div.world do
 					div.name 'World?'
 					div.menu do
-						i.fa.fa[:question, :circle]
-						i.fa.fa[:gear]
+						img.question
+						img.gear
 					end
 					div.style(clear: :both)
 	
@@ -159,7 +159,7 @@ module Component
 	
 				div.match do
 					div.green do
-						img.src('img/scout.png')
+						img.observe
 						span.name 'Green'
 						span.rank
 						span.rest 'Borderlands'
@@ -168,7 +168,7 @@ module Component
 					end
 	
 					div.red do
-						img.src('img/scout.png')
+						img.observe
 						span.name 'Red'
 						span.rank
 						span.rest 'Borderlands'
@@ -177,7 +177,7 @@ module Component
 					end
 	
 					div.blue do
-						img.src('img/scout.png')
+						img.observe
 						span.name 'Blue'
 						span.rank
 						span.rest 'Borderlands'
@@ -186,7 +186,7 @@ module Component
 					end
 	
 					div.eternal do
-						img.src('img/scout.png')
+						img.observe
 						span.name 'Eternal Battlegrounds'
 	
 						div.info
@@ -222,19 +222,45 @@ module Component
 					margin left: 35.px
 	
 					rule '.name' do
-						float :left
 						pointer events: :none
 					end
 	
 					rule '.menu' do
 						vertical align: :middle
-	
-						float :right
-						margin right: 10.px
-	
-						rule 'i' do
+
+						position :absolute
+						top -5.px
+						right 5.px
+
+						rule 'img' do
 							cursor :pointer
-							padding left: 7.px
+							display 'inline-block'
+
+							rule '&.gear' do
+								content url('img/gear.png')
+								width 23.px
+								transform scale(0.9)
+
+								position :relative
+								top 3.px
+
+								rule '&:hover' do
+									content url('img/gear.active.png')
+								end
+							end
+
+							rule '&.question' do
+								content url('img/question.png')
+								transform scale(0.9)
+
+								position :relative
+								top 1.px
+								right 3.px
+
+								rule '&:hover' do
+									content url('img/question.active.png')
+								end
+							end
 						end
 					end
 	
@@ -264,15 +290,15 @@ module Component
 					end
 	
 					rule 'img' do
+						content url('img/observe.png')
 						display 'inline-block'
 						vertical align: :middle
 						cursor :pointer
 						margin right: 4.px
-
-						opacity 0.8
+						width 20.px
 
 						rule '&.active' do
-							opacity 1
+							content url('img/observe.active.png')
 						end
 					end
 	
@@ -296,7 +322,7 @@ module Component
 					end
 	
 					rule '.info' do
-						margin left: 7.px
+						margin left: 4.px
 						padding top: 2.px
 					end
 	

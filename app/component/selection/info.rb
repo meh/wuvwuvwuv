@@ -65,12 +65,14 @@ module Component
 			end
 
 			rule '.bloodlust' do
-				margin right: 1.5.ch
+				margin right: 11.px
+				font size: 13.px
 			end
 
 			rule '.none' do
 				opacity 0
-				margin right: 1.5.ch
+				margin right: 12.px
+				font size: 13.px
 			end
 
 			rule '& > div' do
