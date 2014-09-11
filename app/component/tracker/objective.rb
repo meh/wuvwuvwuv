@@ -164,9 +164,9 @@ module Component
 			unless ruin?
 				epoch      = Time.new.to_i
 				difference = epoch - capped
+				el         = element.at_css(".timer")
 	
 				if difference > 0 && difference <= 5 * 60
-					el        = element.at_css(".timer")
 					remaining = (5 * 60) - difference
 					minutes   = (remaining / 60).floor
 					seconds   = remaining % 60
