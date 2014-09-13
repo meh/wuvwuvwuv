@@ -105,7 +105,7 @@ module Component
 		end
 
 		on 'page:unload' do
-			@interval.abort
+			@interval.stop
 		end
 
 		on :render do
