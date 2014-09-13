@@ -47,7 +47,7 @@ module Component
 				tier.inner_text  = ''
 				siege.inner_text = ''
 				timer.inner_text = '4:55'
-				timer.add_class :active
+				timer.add_class :active, :high, :blink
 			end
 		end
 
@@ -69,12 +69,8 @@ module Component
 				el.inner_text = "%d:%02d" % [minutes, seconds - 1]
 			end
 
-			if minutes == 4 && seconds == 55
-				el.add_class :high
-				el.add_class :blink
-			elsif minutes == 4 && seconds == 45
+			if minutes == 4 && seconds == 45
 				el.remove_class :blink
-				el.add_class :high
 			elsif minutes == 3 && seconds == 0
 				el.remove_class :high
 				el.add_class :medium
@@ -155,8 +151,8 @@ module Component
 		end
 
 		on 'page:unload' do
-			@timer.abort
-			@siege.abort
+			@timer.stop
+			@siege.stop
 			@storage.off
 		end
 
