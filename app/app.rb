@@ -12,6 +12,7 @@ require 'opal'
 require 'lissio'
 require 'overwolf'
 
+require 'browser/navigator'
 require 'browser/screen'
 require 'browser/storage'
 require 'browser/delay'
@@ -33,6 +34,8 @@ require 'component/selection'
 require 'component/help'
 require 'component/configuration'
 require 'component/tracker'
+
+$window.navigator.plugins.refresh
 
 class Application < Lissio::Application
 	def initialize(*)
