@@ -228,7 +228,7 @@ class Application < Lissio::Application
 			reload
 		end
 
-		@current.trigger! :map, value if @current
+		@current.trigger! 'map:change', value if @current
 	end
 	expose :map!
 
@@ -254,7 +254,7 @@ class Application < Lissio::Application
 			reload
 		end
 
-		@current.trigger! :map, value if @current
+		@current.trigger! 'map:change', value if @current
 	end
 	expose :map=
 
