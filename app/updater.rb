@@ -17,34 +17,30 @@ class Updater
 		@mumble = nil
 		@map    = nil
 
-		start
+		tracker
+		match
 	end
 
 	def tracker
-		@tracker ||= -> {
-			next @tracker.after(1) unless Application.mumble?
-
-			map = Application.mumble.identity[:map_id]
-
-			if @map == map
-				next @tracker.after(1)
-			end
-
-			Application.map = case map
-			                  when Map::Eternal.id then :eternal
-			                  when Map::Red.id     then :red
-			                  when Map::Green.id   then :green
-			                  when Map::Blue.id    then :blue
-			                  end
-
-			@map = map
-			@tracker.after(1)
+		names = {
+			Map::Eternal.id => :eternal,
+			Map::Red.id     => :red,
+			Map::Green.id   => :green,
+			Map::Blue.id    => :blue
 		}
+
+		-> {
+			next unless Application.mumble?
+			next unless Application.world
+			next if (map = Application.mumble.identity[:map_id]) == @map
+
+			Application.map = names[@map = map]
+		}.every 1
 	end
 
 	def match
-		@match ||= -> {
-			next @match.after(Application.interval) unless Application.world
+		-> {
+			next match unless Application.world
 
 			epoch = Time.now.to_i
 
@@ -91,13 +87,8 @@ class Updater
 					}
 				}
 			}.always {|e|
-				@match.after(Application.interval)
+				match
 			}
-		}
-	end
-
-	def start
-		tracker.after(1)
-		match.after(Application.interval)
+		}.after Application.interval
 	end
 end
