@@ -10,6 +10,15 @@
 
 module Component
 	class Selection < Lissio::Component
+		def initialize
+			@maps = {
+				green:   Map.new(:green),
+				blue:    Map.new(:blue),
+				red:     Map.new(:red),
+				eternal: Map.new(:eternal)
+			}
+		end
+
 		on 'mouse:down', '.icon' do
 			next unless Overwolf.available?
 	
@@ -33,51 +42,26 @@ module Component
 		on :click, '.question' do
 			Application.navigate('/help')
 		end
-	
-		on :click, '.match img' do |e|
-			next unless Application.world
-	
-			if e.on.class_names.include? :active
-				Application.map! nil
-			else
-				Application.map! e.on.parent.class_name
-			end
-		end
 
-		def rank_for(n)
-			if n == 1
-				'1st'
-			elsif n == 2 || n == 22
-				"#{n}nd"
-			elsif n == 3 || n == 23
-				"#{n}rd"
-			else
-				"#{n}th"
-			end
-		end
-	
 		def update
-			id = Application.world
+			return unless id = Application.world
 	
 			element.at_css('.world .name').inner_text = World.name(id)
 	
-			Matches.find(id).then {|m|
-				element.at_css('.match .green .name').inner_text = m.green.name
-				element.at_css('.match .red .name').inner_text = m.red.name
-				element.at_css('.match .blue .name').inner_text = m.blue.name
+			Matches.find(id).then {|match|
+				Promise.when World.ranks(match.region), match.details
+			}.trace(2) {|match, (ranks, details)|
+				@maps.each {|name, component|
+					unless name == :eternal
+						component.name = match.__send__(name).name
+						component.rank = ranks[match.__send__(name).name]
+					end
 
-				World.ranks(m.region).then {|ranks|
-					element.at_css('.match .green .rank').inner_text = rank_for(ranks[m.green.name])
-					element.at_css('.match .red .rank').inner_text = rank_for(ranks[m.red.name])
-					element.at_css('.match .blue .rank').inner_text = rank_for(ranks[m.blue.name])
+					component.details = details.__send__("#{name}!")
+					component.show
 				}
-	
-				m.details.then {|d|
-					element.at_css('.match .green .info').inner_dom = Info.new(d.green!).render
-					element.at_css('.match .red .info').inner_dom = Info.new(d.red!).render
-					element.at_css('.match .blue .info').inner_dom = Info.new(d.blue!).render
-					element.at_css('.match .eternal .info').inner_dom = Info.new(d.eternal!).render
-				}
+			}.rescue {|e|
+				$console.log e.inspect
 			}
 		end
 
@@ -88,19 +72,9 @@ module Component
 			update
 		end
 
-		on :map do |e, map|
-			element.css('.match img').remove_class(:active)
-
-			if map
-				element.at_css(".match .#{map} img").add_class :active
-			end
-		end
-
 		on 'page:load' do
 			@interval = every 60 do
-				if Application.world
-					update
-				end
+				update
 			end
 		end
 
@@ -108,89 +82,59 @@ module Component
 			@interval.stop
 		end
 
-		on :render do
-			if Application.world
-				update
-			end
+		on 'map:change' do |*args|
+			@maps.each_value {|m|
+				m.trigger! 'map:change', *args
+			}
+		end
 
-			if map = Application.map
-				element.at_css(".match .#{map} img").add_class :active
-			end
+		on :render do
+			update
 		end
 	
 		tag class: :selection
 	
-		html do
-			div.icon do
-				img.src('img/icon.png')
+		html do |_|
+			_.div.icon do
+				_.img.src('img/icon.png')
 			end
 	
-			div.content do
-				div.world do
-					div.name 'World?'
-					div.menu do
-						img.question
-						img.gear
+			_.div.content do
+				_.div.world do
+					_.div.name 'World?'
+					_.div.menu do
+						_.img.question
+						_.img.gear
 					end
-					div.style(clear: :both)
+					_.div.style(clear: :both)
 	
-					select do
-						optgroup.label('North America') do
+					_.select do
+						_.optgroup.label('North America') do
 							World::HASH.to_a.select {|id, name|
 								id.to_s[0] == ?1
 							}.sort_by {|_, name|
 								name
 							}.each {|id, name|
-								option.value(id) >> name
+								_.option.value(id) >> name
 							}
 						end
 	
-						optgroup.label('Europe') do
+						_.optgroup.label('Europe') do
 							World::HASH.to_a.select {|id, name|
 								id.to_s[0] == ?2
 							}.sort_by {|_, name|
 								name
 							}.each {|id, name|
-								option.value(id) >> name
+								_.option.value(id) >> name
 							}
 						end
 					end
 				end
 	
-				div.match do
-					div.green do
-						img.observe
-						span.name 'Green'
-						span.rank
-						span.rest 'Borderlands'
-	
-						div.info
-					end
-	
-					div.red do
-						img.observe
-						span.name 'Red'
-						span.rank
-						span.rest 'Borderlands'
-	
-						div.info
-					end
-	
-					div.blue do
-						img.observe
-						span.name 'Blue'
-						span.rank
-						span.rest 'Borderlands'
-	
-						div.info
-					end
-	
-					div.eternal do
-						img.observe
-						span.name 'Eternal Battlegrounds'
-	
-						div.info
-					end
+				_.div.match do
+					@maps.each_value {|map|
+						_ << map
+					}
 				end
 			end
 		end
@@ -284,68 +228,6 @@ module Component
 				rule '.match' do
 					position :relative
 					margin top: 5.px, left: 8.px
-	
-					rule '& > div' do
-						margin bottom: 10.px
-					end
-	
-					rule 'img' do
-						content url('img/observe.png')
-						display 'inline-block'
-						vertical align: :middle
-						cursor :pointer
-						margin right: 4.px
-						width 20.px
-
-						rule '&.active' do
-							content url('img/observe.active.png')
-						end
-					end
-	
-					rule '.name' do
-						margin left: 3.px
-						position :relative
-						top 2.px
-					end
-	
-					rule '.rank' do
-						margin left: 5.px
-						position :relative
-						top -3.px
-						left -3.px
-					end
-	
-					rule '.rest' do
-						padding left: 2.px
-						position :relative
-						top 2.px
-					end
-	
-					rule '.info' do
-						margin left: 4.px
-						padding top: 2.px
-					end
-	
-					rule '.green' do
-						rule '.name', '.rest' do
-							text shadow: (', 0 0 2px #017d3f' * 10)[1 .. -1] +
-							             (', 0 0 1px #017d3f' * 10)
-						end
-					end
-	
-					rule '.red' do
-						rule '.name', '.rest' do
-							text shadow: (', 0 0 2px #951111' * 10)[1 .. -1] +
-							             (', 0 0 1px #951111' * 10)
-						end
-					end
-	
-					rule '.blue' do
-						rule '.name', '.rest' do
-							text shadow: (', 0 0 2px #006b99' * 10)[1 .. -1] +
-							             (', 0 0 1px #006b99' * 10)
-						end
-					end
 				end
 			end
 		end
@@ -357,22 +239,6 @@ module Component
 						rule '.world' do
 							rule '.name' do
 								font size: 17.px
-							end
-						end
-	
-						rule '.match' do
-							font size: 15.px
-	
-							rule '.rank' do
-								font size: 12.px
-							end
-	
-							rule '.info' do
-								font size: 14.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 13.px
 							end
 						end
 					end
@@ -387,22 +253,6 @@ module Component
 								font size: 17.px
 							end
 						end
-	
-						rule '.match' do
-							font size: 15.px
-	
-							rule '.rank' do
-								font size: 12.px
-							end
-	
-							rule '.info' do
-								font size: 14.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 13.px
-							end
-						end
 					end
 				end
 			end
@@ -413,22 +263,6 @@ module Component
 						rule '.world' do
 							rule '.name' do
 								font size: 19.px
-							end
-						end
-	
-						rule '.match' do
-							font size: 16.px
-	
-							rule '.rank' do
-								font size: 13.px
-							end
-	
-							rule '.info' do
-								font size: 15.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 14.px
 							end
 						end
 					end
@@ -443,22 +277,6 @@ module Component
 								font size: 20.px
 							end
 						end
-	
-						rule '.match' do
-							font size: 17.px
-	
-							rule '.rank' do
-								font size: 14.px
-							end
-	
-							rule '.info' do
-								font size: 16.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 15.px
-							end
-						end
 					end
 				end
 			end
@@ -466,4 +284,4 @@ module Component
 	end
 end
 
-require 'component/selection/info'
+require 'component/selection/map'
