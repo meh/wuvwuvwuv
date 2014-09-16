@@ -60,8 +60,6 @@ module Component
 					component.details = details.__send__("#{name}!")
 					component.show
 				}
-			}.rescue {|e|
-				$console.log e.inspect
 			}
 		end
 
