@@ -78,7 +78,7 @@ module Component
 		end
 
 		on 'map:change' do |e, map|
-			element.css('.observe').remove_class(:active)
+			element.at_css('.observe').remove_class :active
 
 			if @name == map
 				element.at_css('.observe').add_class :active

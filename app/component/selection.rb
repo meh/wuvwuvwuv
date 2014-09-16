@@ -80,9 +80,9 @@ module Component
 			@interval.stop
 		end
 
-		on 'map:change' do |*args|
+		on 'map:change' do |e, map|
 			@maps.each_value {|m|
-				m.trigger! 'map:change', *args
+				m.trigger! 'map:change', map
 			}
 		end
 
