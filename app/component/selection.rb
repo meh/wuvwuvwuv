@@ -10,7 +10,7 @@
 
 module Component
 	class Selection < Lissio::Component
-		on 'mouse:down' do
+		on 'mouse:down', '.icon' do
 			next unless Overwolf.available?
 	
 			Overwolf::Window.current.then {|w|
@@ -18,7 +18,7 @@ module Component
 			}
 		end
 	
-		on :click, '.icon' do
+		on :dblclick, '.icon' do
 			if Overwolf.available?
 				Overwolf::Window.current.then {|w|
 					w.minimize

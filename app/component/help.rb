@@ -291,14 +291,22 @@ module Component
 	end
 
 	class Help < Lissio::Component
-		on 'mouse:down' do
+		on 'mouse:down', '.icon' do
 			next unless Overwolf.available?
 	
 			Overwolf::Window.current.then {|w|
 				w.moving
 			}
 		end
-	
+
+		on :dblclick, '.icon' do
+			if Overwolf.available?
+				Overwolf::Window.current.then {|w|
+					w.minimize
+				}
+			end
+		end
+
 		on :click, '.back' do
 			Application.navigate :back
 		end
