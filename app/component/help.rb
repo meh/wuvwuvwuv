@@ -12,70 +12,56 @@ require 'lissio/component/markdown'
 
 module Component
 	class Text < Lissio::Component::Markdown
-		def children(parent)
-			array = []
-			el    = parent.next_element
-
-			until el.nil? || el =~ parent.name || el =~ 'h1'
-				array << el
-
-				el = el.next_element
-			end
-
-			Browser::DOM::NodeSet[array]
-		end
-
-		on :click, 'h1' do |e|
-			if e.on.at_css('.arrow').class_names.include? :open
-				children(e.on).style(display: :none)
-				e.on.at_css('.arrow').remove_class :open
-			else
-				element.css('h1').each {|el|
-					el.at_css('.arrow').remove_class :open
-					children(el).style(display: :none)
-				}
-
-				children(e.on).style(display: :block)
-				e.on.at_css('.arrow').add_class :open
-
-				children(e.on).filter('h2').each {|el|
-					children(el).style(display: :none)
-				}
-			end
-		end
-
-		on :click, 'h2' do |e|
-			if e.on.at_css('.arrow').class_names.include? :open
-				children(e.on).style(display: :none)
-				e.on.at_css('.arrow').remove_class :open
-			else
-				element.css('h2').each {|el|
-					el.at_css('.arrow').remove_class :open
-					children(el).style(display: :none)
-				}
-
-				children(e.on).style(display: :block)
-				e.on.at_css('.arrow').add_class :open
-			end
-		end
-
 		content <<-MD.gsub(/^\t{3}/m, '')
 			WUV³ is developed by **meh.6784** and the source is available on
 			[GitHub](https://github.com/meh/wuvwuvwuv).
 
+			General
+			=======
+			WUV³ is designed to enhance the Guild Wars 2 UI with important
+			information that isn't already provided in some way, this includes the
+			rank of your enemy worlds, who owns bloodlust on which borders, tracking
+			objective *Righteous Indignation* timer, the tier of the objectives, the
+			siege refreshing timer on each objective and the guild claiming an
+			objective.
+
 			Side
 			====
-			Keep track of the general state of every borderland, including total
-			points acquired in the specific map, tick in that specific map, bloodlust
-			owner and world's rank.
+			When you open it the first time it will ask you to select your world, do
+			so by clicking on *World?*, this will open a dropdown menu where you can
+			choose the proper server.
 
-			Before that information can be shown you have to select the world
-			clicking on **World?**.
+			To minimize the window double click the icon on the top left.
 
-			Clicking on the scout icon will open the tracker window for the specified
-			map, although you don't have to open the tracker manually, if you go to a
-			WvW map the tracker will automatically open for that map, and if you get
-			out of WvW it will close.
+			To move the window around click and drag the icon mentioned above.
+
+			To access the configuration panel click on the gear icon on the top
+			right.
+
+			Observing
+			---------
+			Observing a map will cause the tracker to open, a map can be observed in
+			two ways.
+			
+			Go to a WvW map and the tracker will automatically open with the right
+			map, changing map once in WvW will update the tracker to the map you're
+			on, once you leave WvW it will also automatically close.
+
+			Clicking on the observe icon (the big eye) will open the tracker window
+			for the requested map, keep in mind once you opened the tracker yourself
+			it will stop acting automatically on map change, to close the tracker or
+			revert back to automatic mode just click on the observe icon again.
+
+			Maps
+			----
+			Every border is listed by its color, it's titled with the name of the
+			server and its rank.
+
+			Under the title of the map, points accumulated on the map and the current
+			tick for each team is shown by the team color.
+
+			When the map is a border the bloodlust owner is shown under the observe
+			icon by a star sign colored by the owner's team color.
 
 			Tracker
 			=======
@@ -131,6 +117,53 @@ module Component
 			- `Cardinal` allows you to choose what kind of objective should be named
 			  with its cardinal position.
 		MD
+
+		def children(parent)
+			array = []
+			el    = parent.next_element
+
+			until el.nil? || el =~ parent.name || el =~ 'h1'
+				array << el
+
+				el = el.next_element
+			end
+
+			Browser::DOM::NodeSet[array]
+		end
+
+		on :click, 'h1' do |e|
+			if e.on.at_css('.arrow').class_names.include? :open
+				children(e.on).style(display: :none)
+				e.on.at_css('.arrow').remove_class :open
+			else
+				element.css('h1').each {|el|
+					el.at_css('.arrow').remove_class :open
+					children(el).style(display: :none)
+				}
+
+				children(e.on).style(display: :block)
+				e.on.at_css('.arrow').add_class :open
+
+				children(e.on).filter('h2').each {|el|
+					children(el).style(display: :none)
+				}
+			end
+		end
+
+		on :click, 'h2' do |e|
+			if e.on.at_css('.arrow').class_names.include? :open
+				children(e.on).style(display: :none)
+				e.on.at_css('.arrow').remove_class :open
+			else
+				element.css('h2').each {|el|
+					el.at_css('.arrow').remove_class :open
+					children(el).style(display: :none)
+				}
+
+				children(e.on).style(display: :block)
+				e.on.at_css('.arrow').add_class :open
+			end
+		end
 
 		on :render do
 			element.css('a').each {|el|
@@ -226,7 +259,7 @@ module Component
 			rule 'h1' do
 				margin 5.px, 0
 
-				rule '&#side' do
+				rule '&#general' do
 					margin top: 10.px
 				end
 
@@ -268,7 +301,7 @@ module Component
 				margin 5.px, 0
 			end
 
-			rule 'h2 + p', 'h2 + p + p' do
+			rule 'h2 + p', 'h2 + p + p', 'h2 + p + p + p' do
 				padding left: 20.px
 			end
 
