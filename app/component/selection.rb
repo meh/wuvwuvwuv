@@ -46,11 +46,17 @@ module Component
 		def update
 			return unless id = Application.world
 	
+			unless @maps.any? { |_, m| m.element.class_names.include? :loaded }
+				element.add_class :loading
+			end
+
 			element.at_css('.world .name').inner_text = World.name(id)
 	
 			Matches.find(id).then {|match|
 				Promise.when World.ranks(match.region), match.details
 			}.trace(2) {|match, (ranks, details)|
+				element.remove_class :loading
+
 				@maps.each {|name, component|
 					unless name == :eternal
 						component.name = match.__send__(name).name
@@ -105,6 +111,8 @@ module Component
 						_.img.gear
 					end
 					_.div.style(clear: :both)
+
+					_ << Loader.new
 	
 					_.select do
 						_.optgroup.label('North America') do
@@ -142,7 +150,7 @@ module Component
 			padding 10.px, 0
 			border bottom: [1.px, :solid, 'rgba(220, 220, 220, 0.7)']
 			background 'rgba(0, 0, 0, 0.01)'
-	
+
 			rule '.icon' do
 				width 30.px
 				height 30.px
@@ -227,6 +235,17 @@ module Component
 					position :relative
 					margin top: 5.px, left: 8.px
 				end
+			end
+
+			rule '&.loading' do
+				rule '.loader' do
+					display :block
+				end
+			end
+
+			rule '.loader' do
+				display :none
+				margin top: 5.px
 			end
 		end
 

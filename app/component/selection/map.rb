@@ -234,20 +234,18 @@ module Component
 			rule 'body.small' do
 				rule '.selection' do
 					rule '.content' do
-						rule '.match' do
-							font size: 15.px
+						font size: 15.px
 	
-							rule '.rank' do
-								font size: 12.px
-							end
-	
-							rule '.info' do
-								font size: 14.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 13.px
-							end
+						rule '.rank' do
+							font size: 12.px
+						end
+
+						rule '.info' do
+							font size: 14.px
+						end
+
+						rule '.bloodlust' do
+							font size: 13.px
 						end
 					end
 				end
@@ -256,20 +254,18 @@ module Component
 			rule 'body.normal' do
 				rule '.selection' do
 					rule '.content' do
-						rule '.match' do
-							font size: 15.px
+						font size: 15.px
 	
-							rule '.rank' do
-								font size: 12.px
-							end
-	
-							rule '.info' do
-								font size: 14.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 13.px
-							end
+						rule '.rank' do
+							font size: 12.px
+						end
+
+						rule '.info' do
+							font size: 14.px
+						end
+
+						rule '.bloodlust' do
+							font size: 13.px
 						end
 					end
 				end
@@ -278,20 +274,18 @@ module Component
 			rule 'body.large' do
 				rule '.selection' do
 					rule '.content' do
-						rule '.match' do
-							font size: 16.px
-	
-							rule '.rank' do
-								font size: 13.px
-							end
-	
-							rule '.info' do
-								font size: 15.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 14.px
-							end
+						font size: 16.px
+
+						rule '.rank' do
+							font size: 13.px
+						end
+
+						rule '.info' do
+							font size: 15.px
+						end
+
+						rule '.bloodlust' do
+							font size: 14.px
 						end
 					end
 				end
@@ -300,20 +294,18 @@ module Component
 			rule 'body.larger' do
 				rule '.selection' do
 					rule '.content' do
-						rule '.match' do
-							font size: 17.px
-	
-							rule '.rank' do
-								font size: 14.px
-							end
-	
-							rule '.info' do
-								font size: 16.px
-							end
-	
-							rule '.bloodlust' do
-								font size: 15.px
-							end
+						font size: 17.px
+
+						rule '.rank' do
+							font size: 14.px
+						end
+
+						rule '.info' do
+							font size: 16.px
+						end
+
+						rule '.bloodlust' do
+							font size: 15.px
 						end
 					end
 				end

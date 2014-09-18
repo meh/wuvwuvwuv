@@ -24,6 +24,8 @@ require 'match'
 require 'map'
 require 'updater'
 
+require 'component/loader'
+
 require 'mumble'
 require 'component/mumble'
 
@@ -33,6 +35,7 @@ require 'component/clipboard'
 require 'component/selection'
 require 'component/help'
 require 'component/configuration'
+
 require 'component/tracker'
 
 $window.navigator.plugins.refresh
@@ -326,7 +329,10 @@ class Application < Lissio::Application
 	html do |_|
 		_ << @mumble
 		_ << @clipboard
-		_.div.container! 'Loading...'
+
+		_.div.container! do
+			_ << Component::Loader.new
+		end
 	end
 
 	css! do
