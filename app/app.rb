@@ -34,7 +34,7 @@ require 'component/clipboard'
 
 require 'component/selection'
 require 'component/help'
-require 'component/configuration'
+require 'component/options'
 
 require 'component/tracker'
 
@@ -56,8 +56,8 @@ class Application < Lissio::Application
 			resize!
 		end
 
-		route '/config' do
-			load Component::Configuration.new
+		route '/options' do
+			load Component::Options.new
 			resize!
 		end
 

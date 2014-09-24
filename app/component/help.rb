@@ -35,7 +35,7 @@ module Component
 
 			To move the window around click and drag the icon mentioned above.
 
-			To access the configuration panel click on the gear icon on the top
+			To access the options panel click on the gear icon on the top
 			right.
 
 			Observing
@@ -105,7 +105,7 @@ module Component
 
 			Configuration
 			=============
-			There are various configuration options to adapt WUV³ to your liking.
+			There are various options to adapt WUV³ to your liking.
 
 			- `Interface Size` should be the same you configured Guild Wars 2 with.
 			- `In-Game Only` allows you to show the interface either only while in

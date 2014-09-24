@@ -9,7 +9,7 @@
 #++
 
 module Component
-	class Configuration < Lissio::Component
+	class Options < Lissio::Component
 		on 'mouse:down', '.icon' do
 			next unless Overwolf.available?
 	
@@ -87,7 +87,7 @@ module Component
 				element.at_css('.size td:nth-child(2) select').value.capitalize
 		end
 
-		tag class: :configuration
+		tag class: :options
 
 		html do
 			div.icon do
@@ -96,7 +96,7 @@ module Component
 	
 			div.content do
 				div.header do
-					div.name 'Configuration'
+					div.name 'Options'
 					div.menu do
 						img.back
 					end
@@ -154,7 +154,7 @@ module Component
 
 		css do
 			position :relative
-			padding 10.px, 0
+			padding top: 10.px
 			border bottom: [1.px, :solid, 'rgba(220, 220, 220, 0.7)']
 			background 'rgba(0, 0, 0, 0.01)'
 
@@ -257,7 +257,7 @@ module Component
 
 		css! do
 			rule 'body.small', 'body.normal' do
-				rule '.configuration' do
+				rule '.options' do
 					rule '.content' do
 						rule '.name' do
 							font size: 18.px
@@ -271,7 +271,7 @@ module Component
 			end
 	
 			rule 'body.large' do
-				rule '.configuration' do
+				rule '.options' do
 					rule '.content' do
 						rule '.name' do
 							font size: 19.px
@@ -285,7 +285,7 @@ module Component
 			end
 	
 			rule 'body.larger' do
-				rule '.configuration' do
+				rule '.options' do
 					rule '.content' do
 						rule '.name' do
 							font size: 20.px
