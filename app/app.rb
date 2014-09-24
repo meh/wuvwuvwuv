@@ -217,12 +217,12 @@ class Application < Lissio::Application
 		if Overwolf.available?
 			Promise.when(Overwolf::Window.open('TrackerWindow'),
 			             Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
-				window = c.closed? ? u : c
+				w = c.closed? ? u : c
 
 				if value.nil?
-					window.close
-				elsif window.closed?
-					window.restore
+					w.close
+				elsif w.closed?
+					w.restore
 				else
 					reload
 				end
@@ -243,12 +243,12 @@ class Application < Lissio::Application
 		if Overwolf.available?
 			Promise.when(Overwolf::Window.open('TrackerWindow'),
 			             Overwolf::Window.open('TrackerClickableWindow')).then {|u, c|
-				window = c.closed? ? u : c
+				w = c.closed? ? u : c
 
 				if value.nil?
-					window.close
-				elsif window.closed?
-					window.restore
+					w.close
+				elsif w.closed?
+					w.restore
 				else
 					reload
 				end
