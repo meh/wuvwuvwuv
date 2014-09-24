@@ -147,7 +147,7 @@ module Component
 
 		css do
 			position :relative
-			padding 10.px, 0
+			padding top: 10.px
 			border bottom: [1.px, :solid, 'rgba(220, 220, 220, 0.7)']
 			background 'rgba(0, 0, 0, 0.01)'
 
